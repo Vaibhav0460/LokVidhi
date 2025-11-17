@@ -1,0 +1,30 @@
+# --- General ---
+.DS_Store
+*.log
+.vscode/
+
+# --- Node.js ---
+# Ignore all node_modules folders, wherever they are
+**/node_modules
+npm-debug.log
+package-lock.json
+
+# --- Environment Files (CRITICAL) ---
+# Ignore all local environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# --- Next.js (web/) ---
+web/.next/
+web/out/
+
+# --- TypeScript (api/) ---
+api/dist/
+*.tsbuildinfo
+
+# --- Strapi (cms/) ---
+cms/.cache/
+cms/build/
+cms/database/
