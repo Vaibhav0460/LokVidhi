@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './db'; // Import the database connection
 import scenarioRoutes from './routes/scenario';
+import calculatorRoutes from './routes/calculator';
+import rentRoutes from './routes/rent';
+import chatbotRoutes from './routes/chatbot';
 
 dotenv.config();
 
@@ -13,6 +16,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/scenario', scenarioRoutes);
+app.use('/api/calculator', calculatorRoutes);
+app.use('/api/calculator/rent', rentRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 // 1. Simple API Test
 app.get('/', (req, res) => {

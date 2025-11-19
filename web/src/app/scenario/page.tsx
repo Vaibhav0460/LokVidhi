@@ -1,88 +1,82 @@
-"use client"; // This tells Next.js this page needs interactivity (state/clicks)
+"use client";
 
-import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { BookOpen, Briefcase, Home as HomeIcon } from 'lucide-react';
 
-// Define what our data looks like so TypeScript is happy
-interface NodeOption {
-  id: number;
-  option_text: string;
-  next_node_id: number;
-}
-
-interface ScenarioNode {
-  id: number;
-  content_text: string;
-  is_outcome: boolean;
-  options: NodeOption[];
-}
-
-export default function Home() {
-  const [node, setNode] = useState<ScenarioNode | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  // 1. Load the Story Start (Scenario ID 1)
-  useEffect(() => {
-    fetch('http://localhost:4000/api/scenario/1')
-      .then((res) => res.json())
-      .then((data) => {
-        // Combine the node and its options into one object for easier use
-        setNode({ ...data.node, options: data.options });
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError('Failed to connect to the backend.');
-        setLoading(false);
-      });
-  }, []);
-
-  // 2. Handle Button Clicks (Move to next step)
-  const handleOptionClick = (nextNodeId: number) => {
-    // If there is no next node (e.g., end of story), just return
-    if (!nextNodeId) return;
-
-    setLoading(true);
-    fetch(`http://localhost:4000/api/scenario/node/${nextNodeId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setNode({ ...data.node, options: data.options });
-        setLoading(false);
-      });
-  };
-
-  // 3. Render the UI
-  if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  if (error) return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
-  if (!node) return null;
+export default function ScenarioHub() {
+  // In the future, you can fetch this list from the API
+  const scenarios = [
+    {
+      id: 1,
+      title: "Salary Not Paid?",
+      description: "Your employer hasn't paid you for 2 months. Learn how to file a complaint and demand your rights.",
+      icon: <Briefcase className="w-8 h-8 text-blue-600" />,
+      difficulty: "Beginner",
+    },
+    // Placeholder for future scenarios
+    {
+      id: 2,
+      title: "Landlord Trouble (Coming Soon)",
+      description: "Eviction threats or deposit issues? Navigate the Rent Control Act.",
+      icon: <HomeIcon className="w-8 h-8 text-gray-400" />,
+      difficulty: "Intermediate",
+      disabled: true,
+    },
+  ];
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gray-50">
-      <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+    <main className="flex min-h-screen flex-col items-center p-6 bg-gray-50">
+      <div className="max-w-5xl w-full">
         
-        {/* The Question / Content */}
-        <h1 className="text-2xl font-bold text-gray-800 mb-8 leading-relaxed">
-          {node.content_text}
-        </h1>
+        {/* Header */}
+        <div className="text-center py-12">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+            Learn by Doing
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Choose a real-life legal scenario and play through it. Make choices, see the consequences, and learn your rights along the way.
+          </p>
+        </div>
 
-        {/* The Choices */}
-        <div className="flex flex-col gap-4">
-          {node.options.length > 0 ? (
-            node.options.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => handleOptionClick(opt.next_node_id)}
-                className="w-full text-left px-6 py-4 rounded-lg border border-blue-100 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 text-blue-900 font-medium"
-              >
-                {opt.option_text}
-              </button>
-            ))
-          ) : (
-            // If no options, it's the end of the story
-            <div className="p-4 bg-green-50 text-green-800 rounded-lg border border-green-200">
-              <strong>End of Scenario.</strong> Refresh to start again.
-            </div>
-          )}
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {scenarios.map((scenario) => (
+            <Link 
+              key={scenario.id} 
+              href={scenario.disabled ? "#" : `/scenario/${scenario.id}`}
+              className={`block p-6 bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 ${
+                scenario.disabled 
+                  ? "opacity-60 cursor-not-allowed" 
+                  : "hover:shadow-md hover:border-blue-300"
+              }`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  {scenario.icon}
+                </div>
+                <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${
+                  scenario.disabled 
+                    ? "bg-gray-100 text-gray-800" 
+                    : "bg-green-100 text-green-800"
+                }`}>
+                  {scenario.disabled ? "Soon" : scenario.difficulty}
+                </span>
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {scenario.title}
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {scenario.description}
+              </p>
+              
+              {!scenario.disabled && (
+                <div className="mt-6 flex items-center text-blue-600 font-semibold text-sm">
+                  Start Scenario &rarr;
+                </div>
+              )}
+            </Link>
+          ))}
         </div>
 
       </div>

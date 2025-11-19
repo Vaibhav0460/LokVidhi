@@ -1,31 +1,16 @@
 // This is your new homepage.
 // It lives at /lokvidhi/web/src/app/page.tsx
 
-"use client"; // We'll add click events later
+"use client";
 
-import { ShieldCheck, BookOpen, Bot, Calculator } from 'lucide-react';
-import LoginButton from "@/components/LoginButton";
+import { BookOpen, Bot, Calculator } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center bg-white">
       
-      {/* 1. Header */}
-      <header className="w-full border-b border-gray-200">
-        <nav className="container mx-auto flex items-center justify-between p-6">
-          <div className="text-2xl font-bold text-gray-900">
-            Lok<span className="text-blue-600">Vidhi</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="text-gray-600 hover:text-gray-900 font-medium">
-              About
-            </button>
-            <LoginButton />
-          </div>
-        </nav>
-      </header>
-
-      {/* 2. Hero Section */}
+      {/* 1. Hero Section */}
       <section className="container mx-auto flex flex-col items-center justify-center text-center p-12 md:p-24">
         <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
           Indian Law, <span className="text-blue-600">Simplified.</span>
@@ -33,12 +18,12 @@ export default function Home() {
         <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl">
           Understand your rights without the legalese. LokVidhi turns complex legal codes into interactive stories, simple guides, and tools you can actually use.
         </p>
-        <button className="mt-10 bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
+        <Link href="/signup" className="mt-10 bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
           Get Started For Free
-        </button>
+        </Link>
       </section>
 
-      {/* 3. Features Section */}
+      {/* 2. Features Section */}
       <section className="w-full bg-gray-50 border-t border-b border-gray-100 py-20">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 px-6">
           
@@ -78,7 +63,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Footer */}
+      {/* 3. Footer */}
       <footer className="w-full py-10">
         <div className="container mx-auto text-center text-gray-500">
           © 2025 LokVidhi. All rights reserved.

@@ -1,36 +1,46 @@
 import { NextResponse, type NextRequest } from "next/server";
-// Import from the new central auth.ts file
 import { auth } from "@/auth";
 
-// --- THIS IS THE FIX ---
-// Force this middleware to run on the Node.js runtime, not the Edge.
 export const runtime = 'nodejs';
-// ---------------------
 
-// This is the new middleware function Next.js is looking for
-export default auth((req: NextRequest) => { // Explicitly type req
-  // The 'auth' property is dynamically added by the 'auth' wrapper.
-  // We cast to 'any' here to access it, silencing the TS error.
+// Define which routes are public and which are protected
+const protectedRoutes = ['/scenario'];
+const authRoutes = ['/login', '/signup'];
+
+export default auth((req: NextRequest) => {
   const session = (req as any).auth;
+  const { nextUrl } = req;
+  const isLoggedIn = !!session;
 
-  // If the user is not authenticated (session is null)...
-  if (!session) {
+  const isProtectedRoute = protectedRoutes.some(path => nextUrl.pathname.startsWith(path));
+  const isAuthRoute = authRoutes.some(path => nextUrl.pathname.startsWith(path));
+
+  // 1. If user is logged in and tries to access /login or /signup...
+  if (isAuthRoute && isLoggedIn) {
+    // ...redirect them to the main app (e.g., /scenario).
+    return NextResponse.redirect(new URL("/scenario", nextUrl));
+  }
+
+  // 2. If user is NOT logged in and tries to access a protected page...
+  if (isProtectedRoute && !isLoggedIn) {
     // ...redirect them to the login page.
-    const loginUrl = new URL("/api/auth/signin", req.url);
-    // Tell the login page where to send them back after success
-    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    // We also add `callbackUrl` so they are sent back to the page
+    // they were trying to access after they log in.
+    const loginUrl = new URL("/login", nextUrl);
+    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // If they are authenticated, let them proceed.
+  // 3. Otherwise, let them proceed.
   return NextResponse.next();
 });
 
-// This part stays the same: tell the bouncer which doors to guard
+// We need to update the matcher to run the middleware on all
+// the routes we care about (auth pages and protected pages).
 export const config = {
   matcher: [
-    "/scenario",
-    // "/dashboard",
-    // "/profile"
+    "/scenario/:path*",
+    "/login",
+    "/signup"
   ],
 };
