@@ -6,7 +6,7 @@ const router = Router();
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent';
 
 // The API Key will be injected by the environment or you can paste yours here for testing.
-const API_KEY = "AIzaSyBe70_UUHgZy8b9sxMxVm5C1UWD4YbE_uQ"; 
+const API_KEY = process.env.GEMINI_API_KEY || "";
 
 const SYSTEM_INSTRUCTION = `You are LokVidhi, an expert Indian legal literacy assistant. 
 Your goal is to simplify complex laws for the average citizen.
