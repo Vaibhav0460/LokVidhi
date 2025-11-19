@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function Login() {
+// 1. Rename the original component to LoginContent (or similar)
+// Remove 'export default' from here
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -28,23 +30,20 @@ export default function Login() {
     const res = await signIn('credentials', {
       email,
       password,
-      redirect: false, // We will handle redirect manually
+      redirect: false,
     });
 
     setLoading(false);
 
     if (res?.ok) {
-      // FIX: Prioritize callbackUrl, otherwise go to home page (/)
       const callbackUrl = searchParams.get('callbackUrl') || '/';
       router.push(callbackUrl);
     } else {
-      // Handle errors
       setError('Invalid email or password. Please try again.');
     }
   };
 
   const handleGoogleSignIn = () => {
-    // FIX: Set callbackUrl to the current protected page, or default to scenario
     const callbackUrl = searchParams.get('callbackUrl') || '/scenario';
     signIn('google', { callbackUrl: callbackUrl });
   };
@@ -152,5 +151,15 @@ export default function Login() {
         </p>
       </div>
     </main>
+  );
+}
+
+// 2. Create a wrapper component that uses Suspense
+export default function Login() {
+  return (
+    // The fallback can be a simple loading spinner or text
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
