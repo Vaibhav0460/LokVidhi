@@ -39,7 +39,9 @@ export default function SeveranceCalculator() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/calculator/severance', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      
+      const response = await fetch(`${apiUrl}/api/calculator/severance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,7 +59,8 @@ export default function SeveranceCalculator() {
         setError(data.error || 'Calculation failed due to a server error.');
       }
     } catch (err) {
-      setError('Could not connect to the calculation service. Please try again.');
+      console.error("FULL ERROR DETAILS:", err); // <--- Add this line
+      setError(`Connection Error: ${err instanceof Error ? err.message : String(err)}`); // <--- Show details on screen
     } finally {
       setLoading(false);
     }

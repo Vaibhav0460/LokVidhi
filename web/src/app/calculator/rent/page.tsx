@@ -42,7 +42,9 @@ export default function RentCalculator() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/calculator/rent/deposit', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      const response = await fetch(`${apiUrl}/api/calculator/rent/deposit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -180,8 +182,8 @@ export default function RentCalculator() {
                 <IndianRupee className="w-5 h-5 mr-2" /> Deposit Legality Check
               </h3>
               <p className="text-sm !text-gray-900">
-                Your initial deposit was **{result.initialDepositMonths} months** (Total: {formatCurrency(result.totalDeposit)}).
-                The legal cap in {result.state} is **{result.depositCap} months**.
+                Your initial deposit was <strong>{result.initialDepositMonths} months</strong> (Total: {formatCurrency(result.totalDeposit)}).
+                The legal cap in {result.state} is <strong>{result.depositCap} months</strong>.
               </p>
               <strong className={`block mt-2 ${result.isDepositLegal ? 'text-green-700' : 'text-red-700'} !text-gray-900`}>
                 {result.isDepositLegal 
@@ -196,7 +198,7 @@ export default function RentCalculator() {
                 <Clock className="w-5 h-5 mr-2" /> Minimum Notice Period
               </h3>
               <p className="text-sm !text-gray-900">
-                Under the prevailing {result.legalRule}, the minimum notice period for either party to vacate/evict is typically **{result.noticePeriodDays} days**.
+                Under the prevailing {result.legalRule}, the minimum notice period for either party to vacate/evict is typically <strong>{result.noticePeriodDays} days</strong>.
               </p>
             </div>
 
