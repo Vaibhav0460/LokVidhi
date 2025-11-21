@@ -32,7 +32,7 @@ export default function Home() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600">
               <BookOpen className="h-8 w-8" />
             </div>
-            <h3 className="mt-6 text-2xl font-bold text-gray-900">Interactive Scenarios</h3>
+            <h3 className="mt-6 text-2xl font-bold text-gray-900"><Link href="/scenario" className="text-gray-600 hover:text-gray-900 font-medium">Interactive Scenarios</Link></h3>
             <p className="mt-2 text-gray-600">
               "My landlord is keeping my deposit." Play through real-life stories to see your rights and next steps.
             </p>
@@ -43,7 +43,7 @@ export default function Home() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600">
               <Calculator className="h-8 w-8" />
             </div>
-            <h3 className="mt-6 text-2xl font-bold text-gray-900">Legal Calculators</h3>
+            <h3 className="mt-6 text-2xl font-bold text-gray-900"><Link href="/calculator" className="text-gray-600 hover:text-gray-900 font-medium">Legal Calculators</Link></h3>
             <p className="mt-2 text-gray-600">
               Instantly calculate your severance pay, rent deposit refund, or stamp duty. No math, just answers.
             </p>
@@ -54,7 +54,7 @@ export default function Home() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600">
               <Bot className="h-8 w-8" />
             </div>
-            <h3 className="mt-6 text-2xl font-bold text-gray-900">AI Legal Bot (Beta)</h3>
+            <h3 className="mt-6 text-2xl font-bold text-gray-900"><Link href="/chatbot" className="text-gray-600 hover:text-gray-900 font-medium">AI Legal Bot (Beta)</Link></h3>
             <p className="mt-2 text-gray-600">
               Ask questions in plain English (or Hindi!) and get answers based on actual Bare Acts, not just a guess.
             </p>
