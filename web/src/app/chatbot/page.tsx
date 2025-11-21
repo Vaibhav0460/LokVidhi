@@ -40,7 +40,9 @@ export default function ChatbotPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:4000/api/chatbot/query', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      const res = await fetch(`${apiUrl}/api/chatbot/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userText }),

@@ -23,12 +23,12 @@ export default function ScenarioGame() {
   const [node, setNode] = useState<ScenarioNode | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   // Load the scenario start based on the ID
   useEffect(() => {
     if (!scenarioId) return;
 
-    fetch(`http://localhost:4000/api/scenario/${scenarioId}`)
+    fetch(`${apiUrl}/api/scenario/${scenarioId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Scenario not found");
         return res.json();
@@ -48,7 +48,7 @@ export default function ScenarioGame() {
     if (!nextNodeId) return;
 
     setLoading(true);
-    fetch(`http://localhost:4000/api/scenario/node/${nextNodeId}`)
+    fetch(`${apiUrl}/api/scenario/node/${nextNodeId}`)
       .then((res) => res.json())
       .then((data) => {
         setNode({ ...data.node, options: data.options });
