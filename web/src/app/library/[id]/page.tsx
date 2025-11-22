@@ -26,10 +26,9 @@ export default function ActDetails({ params }: { params: Promise<{ id: string }>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
-    const cleanUrl = apiUrl.replace(/["']/g, "").trim().replace(/\/$/, "");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    fetch(`${cleanUrl}/api/library/acts/${id}`)
+    fetch(`${apiUrl}/api/library/acts/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setData(data);

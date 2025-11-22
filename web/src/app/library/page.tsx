@@ -18,7 +18,7 @@ export default function LibraryPage() {
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    fetch(`http://127.0.0.1:4000/api/library/acts`)
+    fetch(`${apiUrl}/api/library/acts`)
       .then((res) => res.json())
       .then((data) => {
         setActs(data);
