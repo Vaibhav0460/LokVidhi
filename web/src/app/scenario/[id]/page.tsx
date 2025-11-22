@@ -66,7 +66,6 @@ export default function ScenarioGame() {
         <h1 className="text-2xl font-bold text-gray-800 mb-8 leading-relaxed">
           {node.content_text}
         </h1>
-
         <div className="flex flex-col gap-4">
           {node.options.length > 0 ? (
             node.options.map((opt) => (

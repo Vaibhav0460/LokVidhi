@@ -51,9 +51,7 @@ export default function CalculatorHub() {
           
         </div>
         
-        <Link href="/scenario" className="mt-10 block text-center text-gray-600 hover:text-gray-900 font-medium">
-          &larr; Back to Scenario Hub
-        </Link>
+        
       </div>
     </main>
   );
