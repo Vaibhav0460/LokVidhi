@@ -8,13 +8,25 @@ import { User, Mail, Shield, LogOut, Calendar } from "lucide-react";
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  useEffect(() => {
+    if (status === "loading") return;
+
+    // DEBUG LOG: Check your browser console (F12)
+    console.log("ADMIN PAGE DEBUG:", session?.user); 
+
+    // Security Check
+    if (!session || session.user?.role !== "admin") {
+      console.log("Redirecting: Not an admin"); // See if this prints
+      router.push("/"); 
+    }
+  }, [session, status, router]);
 
   // Redirect if not logged in
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
+  // useEffect(() => {
+  //   if (status === "unauthenticated") {
+  //     router.push("/login");
+  //   }
+  // }, [status, router]);
 
   if (status === "loading") {
     return (

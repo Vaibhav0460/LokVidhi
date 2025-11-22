@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { BookOpen, Briefcase, ShoppingCart, Home as HomeIcon } from 'lucide-react';
+import { BookOpen, Briefcase, ShoppingCart, Home as HomeIcon, Car } from 'lucide-react';
 
 export default function ScenarioHub() {
   // In the future, you can fetch this list from the API
@@ -20,9 +20,16 @@ export default function ScenarioHub() {
       icon: <ShoppingCart className="w-8 h-8 text-purple-600" />,
       difficulty: "Beginner",
     },
-    // Placeholder for future scenarios
     {
       id: 3,
+      title: "Traffic Challan Trouble",
+      description: "Stopped without a license? Learn about DigiLocker validity and how to handle fines.",
+      icon: <Car className="w-8 h-8 text-orange-600" />,
+      difficulty: "Beginner",
+    },
+    // Placeholder for future scenarios
+    {
+      id: 4,
       title: "Landlord Trouble (Coming Soon)",
       description: "Eviction threats or deposit issues? Navigate the Rent Control Act.",
       icon: <HomeIcon className="w-8 h-8 text-gray-400" />,

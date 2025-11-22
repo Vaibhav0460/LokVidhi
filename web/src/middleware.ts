@@ -1,46 +1,54 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 export const runtime = 'nodejs';
 
-// Define which routes are public and which are protected
-const protectedRoutes = ['/scenario'];
-const authRoutes = ['/login', '/signup'];
-
-export default auth((req: NextRequest) => {
-  const session = (req as any).auth;
+export default auth((req) => {
   const { nextUrl } = req;
+  
+  // Cast to 'any' to access custom properties
+  const session = (req as any).auth;
+  
   const isLoggedIn = !!session;
+  
+  // --- THE FIX ---
+  // Middleware (Raw Token) has role at root: session.role
+  // Client (Processed Session) has role at user: session.user.role
+  const userRole = session?.user?.role || session?.role; 
+  
+  const isAdmin = userRole === "admin";
+  // ----------------
+  
+  const isAuthRoute = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/signup');
+  const isPrivate = nextUrl.pathname.startsWith('/scenario') || nextUrl.pathname.startsWith('/profile');
+  const isAdminRoute = nextUrl.pathname.startsWith('/admin');
 
-  const isProtectedRoute = protectedRoutes.some(path => nextUrl.pathname.startsWith(path));
-  const isAuthRoute = authRoutes.some(path => nextUrl.pathname.startsWith(path));
+  // 1. Admin Security Check
+  if (isAdminRoute && !isAdmin) {
+    return NextResponse.redirect(new URL('/', nextUrl));
+  }
 
-  // 1. If user is logged in and tries to access /login or /signup...
+  // 2. Redirect logged-in users away from Login/Signup pages
   if (isAuthRoute && isLoggedIn) {
-    // ...redirect them to the main app (e.g., /scenario).
     return NextResponse.redirect(new URL("/scenario", nextUrl));
   }
 
-  // 2. If user is NOT logged in and tries to access a protected page...
-  if (isProtectedRoute && !isLoggedIn) {
-    // ...redirect them to the login page.
-    // We also add `callbackUrl` so they are sent back to the page
-    // they were trying to access after they log in.
+  // 3. Protect private routes (Scenarios, Profile)
+  if (isPrivate && !isLoggedIn) {
     const loginUrl = new URL("/login", nextUrl);
     loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 3. Otherwise, let them proceed.
   return NextResponse.next();
 });
 
-// We need to update the matcher to run the middleware on all
-// the routes we care about (auth pages and protected pages).
 export const config = {
   matcher: [
     "/scenario/:path*",
-    "/login",
-    "/signup"
+    "/profile",     
+    "/admin/:path*",
+    "/login",       
+    "/signup"       
   ],
 };

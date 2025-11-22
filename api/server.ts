@@ -10,6 +10,7 @@ import rentRoutes from './routes/rent';
 import chatbotRoutes from './routes/chatbot';
 // import libraryRoutes from './routes/library'; // <--- COMMENT THIS OUT
 const libraryRoutes = require('./routes/library').default;
+import adminRoutes from './routes/admin';
 
 dotenv.config();
 
@@ -23,15 +24,8 @@ app.use('/api/scenario', scenarioRoutes);
 app.use('/api/calculator', calculatorRoutes);
 app.use('/api/calculator/rent', rentRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-app.use('/api/library', libraryRoutes); // <--- COMMENT THIS OUT
-
-// --- SANITY CHECK ROUTE (ADD THIS) ---
-console.log(">>> REGISTERING SANITY CHECK ROUTE <<<");
-app.get('/api/library/acts', (req, res) => {
-  console.log("!!! HIT THE SANITY ROUTE !!!");
-  res.json([{ id: 999, title: "Sanity Check Act", category: "Test" }]);
-});
-// -------------------------------------
+app.use('/api/library', libraryRoutes);
+app.use('/api/admin', adminRoutes); // <--- 2. Register this
 
 app.get('/', (req, res) => {
   res.json({ message: 'LokVidhi API is running!' });
