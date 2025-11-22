@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function CalculatorHub() {
   return (
-    <main className="flex flex-col items-center p-6 bg-gray-50 min-h-full">
+    <main className="flex flex-col items-center p-6 bg-gray-50 flex-1 w-full">
       <div className="max-w-4xl w-full bg-white rounded-xl shadow-lg mt-10 p-8 border border-gray-200">
         
         <h1 className="text-4xl font-extrabold text-gray-900 mb-2">

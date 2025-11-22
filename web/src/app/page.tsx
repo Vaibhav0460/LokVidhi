@@ -71,13 +71,6 @@ export default function Home() {
 
         </div>
       </section>
-
-      {/* 3. Footer */}
-      <footer className="w-full py-10">
-        <div className="container mx-auto text-center text-gray-500">
-          © 2025 LokVidhi. All rights reserved.
-        </div>
-      </footer>
     </main>
   );
 }

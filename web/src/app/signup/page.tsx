@@ -3,11 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react'; // 1. Import Icons
 
 export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // 2. Add Toggle State
+  
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -18,7 +21,7 @@ export default function Signup() {
     setError('');
 
     if (!name || !email || !password) {
-      setError('Email and password are required.');
+      setError('All fields are required.');
       setLoading(false);
       return;
     }
@@ -31,8 +34,6 @@ export default function Signup() {
       });
 
       if (res.ok) {
-        // Automatically sign in the user after successful registration
-        // A simpler flow is to just tell them to log in.
         router.push('/login?status=signup-success');
       } else {
         const data = await res.json();
@@ -62,6 +63,7 @@ export default function Signup() {
             </div>
           )}
           
+          {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Full Name
@@ -70,19 +72,16 @@ export default function Signup() {
               id="name"
               name="name"
               type="text"
-              autoComplete="name"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
+          {/* Email Field */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email address
             </label>
             <input
@@ -93,27 +92,40 @@ export default function Signup() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
+          {/* Password Field with Toggle */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
+            <div className="relative mt-1">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"} 
+                autoComplete="new-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10" 
+              />
+              
+              {/* 4. Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" aria-hidden="true" />
+                ) : (
+                  <Eye className="h-5 w-5" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
