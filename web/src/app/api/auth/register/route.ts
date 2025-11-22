@@ -8,10 +8,10 @@ const pool = new Pool({
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { name, email, password } = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
+    if (!name || !email || !password) {
+      return NextResponse.json({ error: 'Name, email and password are required.' }, { status: 400 });
     }
 
     // Check if user already exists
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     // Insert new user
     const newUser = await pool.query(
       'INSERT INTO users (email, "hashedPassword", name) VALUES ($1, $2, $3) RETURNING id, email, name',
-      [email, hashedPassword, email.split('@')[0]] // Use first part of email as default name
+      [email, hashedPassword, name]
     );
 
     return NextResponse.json(newUser.rows[0], { status: 201 });

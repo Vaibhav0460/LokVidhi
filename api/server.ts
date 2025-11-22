@@ -1,11 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import pool from './db'; // Import the database connection
+import pool from './db';
+
+// ... other imports
 import scenarioRoutes from './routes/scenario';
 import calculatorRoutes from './routes/calculator';
 import rentRoutes from './routes/rent';
 import chatbotRoutes from './routes/chatbot';
+// import libraryRoutes from './routes/library'; // <--- COMMENT THIS OUT
+const libraryRoutes = require('./routes/library').default;
 
 dotenv.config();
 
@@ -19,25 +23,18 @@ app.use('/api/scenario', scenarioRoutes);
 app.use('/api/calculator', calculatorRoutes);
 app.use('/api/calculator/rent', rentRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/library', libraryRoutes); // <--- COMMENT THIS OUT
 
-// 1. Simple API Test
+// --- SANITY CHECK ROUTE (ADD THIS) ---
+console.log(">>> REGISTERING SANITY CHECK ROUTE <<<");
+app.get('/api/library/acts', (req, res) => {
+  console.log("!!! HIT THE SANITY ROUTE !!!");
+  res.json([{ id: 999, title: "Sanity Check Act", category: "Test" }]);
+});
+// -------------------------------------
+
 app.get('/', (req, res) => {
   res.json({ message: 'LokVidhi API is running!' });
-});
-
-
-// 2. Database Connection Test
-app.get('/test-db', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW()');
-    res.json({ 
-      message: 'Database Connected Successfully!', 
-      time: result.rows[0].now 
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database Connection Failed' });
-  }
 });
 
 app.listen(PORT, () => {

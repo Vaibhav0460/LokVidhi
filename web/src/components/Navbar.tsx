@@ -17,6 +17,9 @@ export default function Navbar() {
            <Link href="/scenario" className="text-gray-600 hover:text-gray-900 font-medium">
             Scenarios
           </Link>
+          <Link href="/library" className="text-gray-600 hover:text-gray-900 font-medium">
+            Library
+          </Link>
           <Link href="/calculator" className="text-gray-600 hover:text-gray-900 font-medium">
             Calculators
           </Link>

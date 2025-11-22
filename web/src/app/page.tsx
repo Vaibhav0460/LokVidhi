@@ -5,8 +5,10 @@
 
 import { BookOpen, Bot, Calculator } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 export default function Home() {
+  const { data: session } = useSession();
   return (
     <main className="flex min-h-screen flex-col items-center bg-white">
       
@@ -18,9 +20,16 @@ export default function Home() {
         <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl">
           Understand your rights without the legalese. LokVidhi turns complex legal codes into interactive stories, simple guides, and tools you can actually use.
         </p>
-        <Link href="/signup" className="mt-10 bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
-          Get Started For Free
+
+        {session ? (
+          <Link href="/scenario" className="mt-10 bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
+          Go to Dashboard
         </Link>
+        ) : (
+          <Link href="/signup" className="mt-10 bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
+            Get Started For Free
+          </Link>
+        )}
       </section>
 
       {/* 2. Features Section */}
