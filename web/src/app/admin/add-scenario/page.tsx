@@ -34,7 +34,7 @@ export default function AddScenarioPage() {
       if (res.ok) {
         const newScenario = await res.json();
         // Success! Redirect to the Scenario Hub (or the Editor later)
-        router.push('/scenario'); 
+        router.push('/admin/scenarios'); 
       } else {
         const data = await res.json();
         setError(data.error || "Failed to create scenario.");

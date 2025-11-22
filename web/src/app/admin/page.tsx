@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ShieldAlert, Users, FileText, Activity, RefreshCw } from "lucide-react";
+import { ShieldAlert, Users, FileText, Activity, Book, RefreshCw, Layers } from "lucide-react";
 import Link from 'next/link';
 
 
@@ -121,19 +121,19 @@ export default function AdminDashboard() {
         {/* CMS Actions */}
         <h2 className="text-xl font-bold text-gray-900 mb-4">Content Management</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link href="/admin/add-act" className="block">
-            <button className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group cursor-pointer">
-              <FileText className="w-10 h-10 text-gray-400 group-hover:text-blue-600 mb-3" />
-              <span className="font-medium text-gray-600 group-hover:text-blue-700">Add New Legal Act</span>
-            </button>
-          </Link>
+        <Link href="/admin/library" className="block">
+          <button className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all group cursor-pointer">
+            <Book className="w-10 h-10 text-gray-400 group-hover:text-purple-600 mb-3" />
+            <span className="font-medium text-gray-600 group-hover:text-purple-700">Manage Library</span>
+          </button>
+        </Link>
           
-          <Link href="/admin/add-scenario" className="group"> {/* FIX: Add Link */}
-            <button className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all group cursor-pointer h-full">
-              <Activity className="w-10 h-10 text-gray-400 group-hover:text-green-600 mb-3" />
-              <span className="font-medium text-gray-600 group-hover:text-green-700">Create New Scenario</span>
-            </button>
-          </Link>
+        <Link href="/admin/scenarios" className="block">
+          <button className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all group cursor-pointer h-full">
+            <Layers className="w-10 h-10 text-gray-400 group-hover:text-green-600 mb-3" />
+            <span className="font-medium text-gray-600 group-hover:text-green-700">Manage Scenarios</span>
+          </button>
+        </Link>
         </div>
 
       </div>

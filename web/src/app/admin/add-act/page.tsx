@@ -32,7 +32,7 @@ export default function AddActPage() {
       });
 
       if (res.ok) {
-        router.push('/admin'); // Go back to dashboard on success
+        router.push('/admin/library'); // Go back to dashboard on success
       } else {
         const data = await res.json();
         setError(data.error || "Failed to save.");

@@ -1,42 +1,50 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, Briefcase, ShoppingCart, Home as HomeIcon, Car } from 'lucide-react';
+import { BookOpen, Briefcase, Gavel, Car, AlertTriangle } from 'lucide-react';
+
+interface Scenario {
+  id: number;
+  title: string;
+  description: string;
+  difficulty_level: string;
+}
 
 export default function ScenarioHub() {
-  // In the future, you can fetch this list from the API
-  const scenarios = [
-    {
-      id: 1,
-      title: "Salary Not Paid?",
-      description: "Your employer hasn't paid you for 2 months. Learn how to file a complaint and demand your rights.",
-      icon: <Briefcase className="w-8 h-8 text-blue-600" />,
-      difficulty: "Beginner",
-    },
-    {
-      id: 2,
-      title: "Defective Product",
-      description: "Shopkeeper refusing a return? Learn how to use the Consumer Protection Act to get a replacement or refund.",
-      icon: <ShoppingCart className="w-8 h-8 text-purple-600" />,
-      difficulty: "Beginner",
-    },
-    {
-      id: 3,
-      title: "Traffic Challan Trouble",
-      description: "Stopped without a license? Learn about DigiLocker validity and how to handle fines.",
-      icon: <Car className="w-8 h-8 text-orange-600" />,
-      difficulty: "Beginner",
-    },
-    // Placeholder for future scenarios
-    {
-      id: 4,
-      title: "Landlord Trouble (Coming Soon)",
-      description: "Eviction threats or deposit issues? Navigate the Rent Control Act.",
-      icon: <HomeIcon className="w-8 h-8 text-gray-400" />,
-      difficulty: "Intermediate",
-      disabled: true,
-    },
-  ];
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchScenarios = async () => {
+      try {
+        // Use env var or fallback
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+        const cleanUrl = apiUrl.replace(/["']/g, "").trim().replace(/\/$/, "");
+        
+        const res = await fetch(`${cleanUrl}/api/scenario`);
+        if (!res.ok) throw new Error("Failed to fetch");
+        
+        const data = await res.json();
+        setScenarios(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchScenarios();
+  }, []);
+
+  // Helper to assign icons dynamically based on title/content
+  const getIcon = (title: string) => {
+    const t = title.toLowerCase();
+    if (t.includes("salary") || t.includes("work")) return <Briefcase className="w-8 h-8 text-blue-600" />;
+    if (t.includes("traffic") || t.includes("challan")) return <Car className="w-8 h-8 text-orange-600" />;
+    if (t.includes("consumer") || t.includes("product")) return <AlertTriangle className="w-8 h-8 text-red-600" />;
+    return <Gavel className="w-8 h-8 text-purple-600" />;
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center p-6 bg-gray-50">
@@ -53,45 +61,49 @@ export default function ScenarioHub() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {scenarios.map((scenario) => (
-            <Link 
-              key={scenario.id} 
-              href={scenario.disabled ? "#" : `/scenario/${scenario.id}`}
-              className={`block p-6 bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 ${
-                scenario.disabled 
-                  ? "opacity-60 cursor-not-allowed" 
-                  : "hover:shadow-md hover:border-blue-300"
-              }`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  {scenario.icon}
-                </div>
-                <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${
-                  scenario.disabled 
-                    ? "bg-gray-100 text-gray-800" 
-                    : "bg-green-100 text-green-800"
-                }`}>
-                  {scenario.disabled ? "Soon" : scenario.difficulty}
-                </span>
+        {loading ? (
+          <div className="text-center py-10 text-gray-500">Loading Scenarios...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {scenarios.length > 0 ? (
+              scenarios.map((scenario) => (
+                <Link 
+                  key={scenario.id} 
+                  href={`/scenario/${scenario.id}`}
+                  className="block p-6 bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-blue-300 group"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-blue-50 transition-colors">
+                      {getIcon(scenario.title)}
+                    </div>
+                    <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${
+                      scenario.difficulty_level === "Beginner" ? "bg-green-100 text-green-800" :
+                      scenario.difficulty_level === "Intermediate" ? "bg-yellow-100 text-yellow-800" :
+                      "bg-red-100 text-red-800"
+                    }`}>
+                      {scenario.difficulty_level}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">
+                    {scenario.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 h-[60px]">
+                    {scenario.description}
+                  </p>
+                  
+                  <div className="mt-6 flex items-center text-blue-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
+                    Start Scenario &rarr;
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500">
+                No scenarios available yet. Check back soon!
               </div>
-              
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {scenario.title}
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {scenario.description}
-              </p>
-              
-              {!scenario.disabled && (
-                <div className="mt-6 flex items-center text-blue-600 font-semibold text-sm">
-                  Start Scenario &rarr;
-                </div>
-              )}
-            </Link>
-          ))}
-        </div>
+            )}
+          </div>
+        )}
 
       </div>
     </main>

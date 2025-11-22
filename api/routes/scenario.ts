@@ -3,6 +3,17 @@ import pool from '../db';
 
 const router = Router();
 
+// GET /api/scenario (List all scenarios)
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query('SELECT * FROM scenarios ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch scenarios' });
+  }
+});
+
 // GET /api/scenario/:id
 // Fetches the Scenario Title and the STARTING Node (First question)
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
