@@ -50,6 +50,24 @@ export default function AdminDashboard() {
 
   if (status === "loading") return <div className="p-10 text-center">Loading...</div>;
 
+  const handleSeed = async () => {
+    if (!confirm("⚠️ WARNING: This will DELETE all existing Acts and replace them with the default set. Continue?")) return;
+    
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+    const cleanUrl = apiUrl.replace(/["']/g, "").trim().replace(/\/$/, "");
+
+    try {
+      const res = await fetch(`${cleanUrl}/api/seed/library`, { method: 'POST' });
+      if (res.ok) {
+        alert("Library populated! Go check the Manage Library page.");
+      } else {
+        alert("Seeding failed.");
+      }
+    } catch (err) {
+      alert("Connection error.");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
@@ -134,6 +152,19 @@ export default function AdminDashboard() {
             <span className="font-medium text-gray-600 group-hover:text-green-700">Manage Scenarios</span>
           </button>
         </Link>
+        </div>
+
+        {/* New Section: System Tools */}
+        <h2 className="text-xl font-bold text-gray-900 mb-4 mt-8">System Tools</h2>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-red-100">
+          <h3 className="font-bold text-red-800 mb-2">Danger Zone</h3>
+          <p className="text-sm text-gray-600 mb-4">Use these tools to reset or populate data. Be careful!</p>
+          
+          <button 
+            onClick={handleSeed}
+            className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors border border-red-200">
+            Reset & Populate Library (Seed Data)
+          </button>
         </div>
 
       </div>

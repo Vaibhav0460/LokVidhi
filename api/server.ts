@@ -11,6 +11,7 @@ import chatbotRoutes from './routes/chatbot';
 // import libraryRoutes from './routes/library'; // <--- COMMENT THIS OUT
 const libraryRoutes = require('./routes/library').default;
 import adminRoutes from './routes/admin';
+import seedRoutes from './routes/seed';
 
 dotenv.config();
 
@@ -25,7 +26,8 @@ app.use('/api/calculator', calculatorRoutes);
 app.use('/api/calculator/rent', rentRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/library', libraryRoutes);
-app.use('/api/admin', adminRoutes); // <--- 2. Register this
+app.use('/api/admin', adminRoutes);
+app.use('/api/seed', seedRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'LokVidhi API is running!' });
