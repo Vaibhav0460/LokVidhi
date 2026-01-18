@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import pool from '../db';
-import data from '../../BNS.json';
-import data1 from '../../Acts.json';
+import data from './BNS.json';
+import data1 from './Acts.json';
 
 const router = Router();
 
