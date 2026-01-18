@@ -1,0 +1,160 @@
+[
+    {
+      "title": "Constitution of India, 1950",
+      "category": "Constitutional Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Article 14", "text": "The State shall not deny to any person equality before the law or the equal protection of the laws.", "simple": "Equality before Law: No one is above the law, not even politicians or celebrities." },
+        { "number": "Article 15", "text": "Prohibition of discrimination on grounds of religion, race, caste, sex or place of birth.", "simple": "No Discrimination: The state cannot treat you unfairly based on your background." },
+        { "number": "Article 19(1)(a)", "text": "All citizens shall have the right to freedom of speech and expression.", "simple": "Freedom of Speech: You can express your opinion freely (but cannot incite violence or defame others)." },
+        { "number": "Article 21", "text": "No person shall be deprived of his life or personal liberty except according to procedure established by law.", "simple": "Right to Life: The most powerful right. It includes the right to privacy, health, and dignity." },
+        { "number": "Article 21A", "text": "The State shall provide free and compulsory education to all children of the age of six to fourteen years.", "simple": "Right to Education: Every child has a fundamental right to go to school." },
+        { "number": "Article 23", "text": "Traffic in human beings and begar and other similar forms of forced labour are prohibited.", "simple": "No Forced Labor: Human trafficking and slavery are strictly banned." },
+        { "number": "Article 24", "text": "No child below the age of fourteen years shall be employed to work in any factory or mine.", "simple": "No Child Labor: Children cannot be hired for dangerous jobs." },
+        { "number": "Article 32", "text": "Remedies for enforcement of rights conferred by this Part.", "simple": "Constitutional Remedies: You can approach the Supreme Court directly if your fundamental rights are violated." },
+        { "number": "Article 51A", "text": "Fundamental Duties: To abide by the Constitution and respect its ideals and institutions...", "simple": "Your Duties: Respect the flag, protect public property, and preserve the environment." }
+      ]
+    },
+    {
+      "title": "Indian Penal Code (IPC), 1860",
+      "category": "Criminal Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 34", "text": "Acts done by several persons in furtherance of common intention.", "simple": "Common Intention: If a group commits a crime together, each member is equally responsible." },
+        { "number": "Section 120B", "text": "Punishment of criminal conspiracy.", "simple": "Conspiracy: Planning a crime with someone else is a punishable offense, even if the crime hasn't happened yet." },
+        { "number": "Section 124A", "text": "Sedition.", "simple": "Sedition: Words or actions that incite hatred or violence against the Government of India." },
+        { "number": "Section 141", "text": "Unlawful Assembly.", "simple": "A gathering of 5 or more people with the intent to commit a crime or disturb peace." },
+        { "number": "Section 188", "text": "Disobedience to order duly promulgated by public servant.", "simple": "Disobeying Official Orders: Like violating a curfew or COVID lockdown rules." },
+        { "number": "Section 294", "text": "Obscene acts and songs.", "simple": "Public Obscenity: Doing obscene acts or singing obscene songs in public is a crime." },
+        { "number": "Section 302", "text": "Punishment for murder.", "simple": "Murder: Intentional killing of another human being." },
+        { "number": "Section 304A", "text": "Causing death by negligence.", "simple": "Negligent Death: Causing death carelessly (e.g., reckless driving), but without intent to kill." },
+        { "number": "Section 307", "text": "Attempt to murder.", "simple": "Attempted Murder: Trying to kill someone but failing. Punishable with up to 10 years in jail." },
+        { "number": "Section 309", "text": "Attempt to commit suicide.", "simple": "Suicide Attempt: (Note: Largely decriminalized by Mental Healthcare Act, but still exists in IPC)." },
+        { "number": "Section 323", "text": "Punishment for voluntarily causing hurt.", "simple": "Simple Hurt: Slapping, punching, or hitting someone causing pain but no major injury." },
+        { "number": "Section 354", "text": "Assault or criminal force to woman with intent to outrage her modesty.", "simple": "Outraging Modesty: Inappropriate physical contact or behavior towards a woman." },
+        { "number": "Section 375", "text": "Rape.", "simple": "Rape: Sexual intercourse without consent. Consent obtained by fear or fraud is invalid." },
+        { "number": "Section 378", "text": "Theft.", "simple": "Theft: Taking someone's movable property without their consent." },
+        { "number": "Section 383", "text": "Extortion.", "simple": "Extortion: Forcing someone to give property or money by threatening them with injury." },
+        { "number": "Section 390", "text": "Robbery.", "simple": "Robbery: Theft or extortion accomplished by causing fear of instant death or hurt." },
+        { "number": "Section 415", "text": "Cheating.", "simple": "Cheating: Deceiving someone to make them deliver property or consent to something harmful." },
+        { "number": "Section 420", "text": "Cheating and dishonestly inducing delivery of property.", "simple": "Fraud/420: A serious form of cheating involving property or money." },
+        { "number": "Section 498A", "text": "Husband or relative of husband of a woman subjecting her to cruelty.", "simple": "Dowry Harassment: Cruelty towards a wife by her husband or in-laws." },
+        { "number": "Section 499", "text": "Defamation.", "simple": "Defamation: Damaging someone's reputation by publishing false statements." },
+        { "number": "Section 503", "text": "Criminal intimidation.", "simple": "Intimidation: Threatening to harm someone's person, reputation, or property." },
+        { "number": "Section 509", "text": "Word, gesture or act intended to insult the modesty of a woman.", "simple": "Eve Teasing: Making sounds, gestures, or comments that insult a woman's dignity." }
+      ]
+    },
+    {
+      "title": "Code of Criminal Procedure (CrPC), 1973",
+      "category": "Criminal Procedure",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 41A", "text": "Notice of appearance before police officer.", "simple": "Notice Instead of Arrest: For crimes punishable by less than 7 years, police should issue a notice first, not arrest immediately." },
+        { "number": "Section 46(4)", "text": "Arrest of women.", "simple": "No Night Arrest for Women: A woman cannot be arrested after sunset and before sunrise, except in exceptional circumstances." },
+        { "number": "Section 50", "text": "Person arrested to be informed of grounds of arrest and of right to bail.", "simple": "Right to Know: Police must tell you WHY you are being arrested and if the offense is bailable." },
+        { "number": "Section 57", "text": "Person arrested not to be detained more than twenty-four hours.", "simple": "The 24-Hour Rule: Police cannot hold you for more than 24 hours without producing you before a Magistrate." },
+        { "number": "Section 125", "text": "Order for maintenance of wives, children and parents.", "simple": "Maintenance: A person must provide financial support to their wife, children, or aging parents if they cannot support themselves." },
+        { "number": "Section 144", "text": "Power to issue order in urgent cases of nuisance or apprehended danger.", "simple": "Section 144: An order banning the assembly of 4 or more people in an area to prevent trouble." },
+        { "number": "Section 154", "text": "Information in cognizable cases (FIR).", "simple": "First Information Report (FIR): The police MUST register an FIR if a serious (cognizable) crime is reported." },
+        { "number": "Section 438", "text": "Direction for grant of bail to person apprehending arrest.", "simple": "Anticipatory Bail: Getting bail BEFORE you are arrested if you fear false implication." }
+      ]
+    },
+    {
+      "title": "Indian Contract Act, 1872",
+      "category": "Civil Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 10", "text": "What agreements are contracts.", "simple": "Valid Contract: An agreement is only legal if made by free consent, competent parties, and for a lawful object." },
+        { "number": "Section 11", "text": "Who are competent to contract.", "simple": "Capacity: Minors (under 18) and persons of unsound mind cannot sign legal contracts." },
+        { "number": "Section 13", "text": "Consent defined.", "simple": "Consent: Two people agree on the same thing in the same sense." },
+        { "number": "Section 27", "text": "Agreement in restraint of trade, void.", "simple": "Restraint of Trade: You cannot sign a contract that bans someone from practicing a lawful profession." },
+        { "number": "Section 73", "text": "Compensation for loss or damage caused by breach of contract.", "simple": "Breach Penalty: If someone breaks a contract, they must pay for the loss caused to the other party." }
+      ]
+    },
+    {
+      "title": "Motor Vehicles Act, 1988 (Amended)",
+      "category": "Traffic Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 129", "text": "Wearing of protective headgear.", "simple": "Helmet Rule: Riding a two-wheeler without a helmet is illegal." },
+        { "number": "Section 130", "text": "Duty to produce documents.", "simple": "Show Papers: You must produce your license and registration when asked by a uniformed officer." },
+        { "number": "Section 181", "text": "Driving vehicles in contravention of section 3 or section 4.", "simple": "No License: Driving without a valid license can lead to a heavy fine or jail." },
+        { "number": "Section 184", "text": "Driving dangerously.", "simple": "Rash Driving: Speeding, jumping red lights, or using a phone while driving." },
+        { "number": "Section 185", "text": "Driving by a drunken person or by a person under the influence of drugs.", "simple": "Drunk Driving: Driving with alcohol in your blood (above 30mg/100ml) is a criminal offense." },
+        { "number": "Section 194D", "text": "Penalty for not wearing a helmet.", "simple": "Helmet Fine: The fine is ₹1000 and disqualification of license for 3 months." }
+      ]
+    },
+    {
+      "title": "Information Technology (IT) Act, 2000",
+      "category": "Cyber Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 43", "text": "Penalty and compensation for damage to computer, computer system, etc.", "simple": "Hacking/Data Theft: Accessing or copying data from someone's computer without permission is punishable." },
+        { "number": "Section 66C", "text": "Punishment for identity theft.", "simple": "Identity Theft: Using someone else's password or digital signature fraudulently." },
+        { "number": "Section 66D", "text": "Punishment for cheating by personation by using computer resource.", "simple": "Phishing: Impersonating someone online to cheat people (e.g., fake bank emails)." },
+        { "number": "Section 66E", "text": "Punishment for violation of privacy.", "simple": "Privacy Violation: Capturing or sharing private images of a person without consent." },
+        { "number": "Section 67", "text": "Punishment for publishing or transmitting obscene material in electronic form.", "simple": "Online Obscenity: Sending or posting vulgar/pornographic content electronically." }
+      ]
+    },
+    {
+      "title": "Consumer Protection Act, 2019",
+      "category": "Consumer Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 2(9)", "text": "Consumer Rights.", "simple": "The 6 Rights: Right to Safety, Information, Choice, Representation, Redressal, and Education." },
+        { "number": "Section 35", "text": "Manner in which complaint shall be made.", "simple": "Filing Complaints: You can file a consumer complaint easily, even without a lawyer." },
+        { "number": "Section 86", "text": "Punishment for contravention of order.", "simple": "Ignoring Orders: If a company ignores the Consumer Court's order, they can be jailed." },
+        { "number": "Section 90", "text": "Punishment for manufacturing for sale or storing, selling or distributing or importing containing adulterant.", "simple": "Adulteration: Selling unsafe or adulterated food/products is a criminal offense." }
+      ]
+    },
+    {
+      "title": "Hindu Marriage Act, 1955",
+      "category": "Family Law",
+      "jurisdiction": "National (Hindus)",
+      "sections": [
+        { "number": "Section 5", "text": "Conditions for a Hindu marriage.", "simple": "Valid Marriage: Neither party should have a living spouse, and both must be of legal age." },
+        { "number": "Section 9", "text": "Restitution of conjugal rights.", "simple": "Return Home: If a spouse leaves without reason, the court can order them to return (controversial but valid)." },
+        { "number": "Section 13", "text": "Divorce.", "simple": "Grounds for Divorce: Adultery, cruelty, desertion, conversion, mental disorder, etc." },
+        { "number": "Section 13B", "text": "Divorce by mutual consent.", "simple": "Mutual Divorce: The fastest way to separate if both husband and wife agree." }
+      ]
+    },
+    {
+      "title": "Protection of Women from Domestic Violence Act, 2005",
+      "category": "Family Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 3", "text": "Definition of domestic violence.", "simple": "What is Violence: Includes physical, verbal, emotional, sexual, and economic abuse." },
+        { "number": "Section 17", "text": "Right to reside in a shared household.", "simple": "Right to Residence: A woman cannot be kicked out of her matrimonial home, even if she doesn't own it." },
+        { "number": "Section 18", "text": "Protection orders.", "simple": "Protection Order: The court can forbid the abuser from contacting or coming near the victim." }
+      ]
+    },
+    {
+      "title": "Right to Information (RTI) Act, 2005",
+      "category": "Administrative Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 3", "text": "Right to information.", "simple": "Right to Ask: Every citizen has the right to ask questions to public authorities." },
+        { "number": "Section 6", "text": "Request for obtaining information.", "simple": "How to Ask: Submit a simple application in writing or online. No complex format needed." },
+        { "number": "Section 7(1)", "text": "Disposal of request.", "simple": "30 Day Rule: The officer must reply within 30 days. If it concerns life/liberty, reply within 48 hours." }
+      ]
+    },
+    {
+      "title": "Negotiable Instruments Act, 1881",
+      "category": "Banking Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 138", "text": "Dishonour of cheque for insufficiency, etc., of funds in the account.", "simple": "Cheque Bounce: It is a criminal offense if a cheque bounces due to lack of funds. Can lead to 2 years in jail." },
+        { "number": "Section 143A", "text": "Power to direct interim compensation.", "simple": "Interim Pay: The court can order the accused to pay 20% of the cheque amount to the complainant while the case is ongoing." }
+      ]
+    },
+    {
+      "title": "Sexual Harassment of Women at Workplace (POSH) Act, 2013",
+      "category": "Labor Law",
+      "jurisdiction": "National",
+      "sections": [
+        { "number": "Section 3", "text": "Prevention of sexual harassment.", "simple": "Workplace Safety: No woman shall be subjected to sexual harassment at any workplace." },
+        { "number": "Section 4", "text": "Constitution of Internal Complaints Committee.", "simple": "ICC: Every office with 10+ employees MUST have an Internal Complaints Committee headed by a senior woman." },
+        { "number": "Section 9", "text": "Complaint of sexual harassment.", "simple": "Filing Complaint: A written complaint must be filed to the ICC within 3 months of the incident." }
+      ]
+    }
+  ]
