@@ -1,172 +1,164 @@
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, useCallback, use } from 'react';
+import ReactFlow, { 
+  addEdge, Background, Controls, MiniMap, 
+  useNodesState, useEdgesState, Connection, MarkerType
+} from 'reactflow';
+import dagre from 'dagre';
+import 'reactflow/dist/style.css';
+import DecisionNode from '@/components/DecisionNode';
+import EditableEdge from '@/components/EditableEdge';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Trash2, Save, Edit2, X, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 
-interface Node {
-  id: number;
-  content_text: string;
-  is_outcome: boolean;
-}
+const edgeTypes = { editable: EditableEdge };
+const nodeTypes = { decision: DecisionNode };
 
-export default function ManageNodes({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [scenarioTitle, setScenarioTitle] = useState("Scenario");
-  const [loading, setLoading] = useState(true);
-  
-  // Form State
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({ 
-    content_text: '', 
-    is_outcome: false
-  });
+const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  dagreGraph.setGraph({ rankdir: direction });
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
-  const cleanUrl = apiUrl.replace(/["']/g, "").trim().replace(/\/$/, "");
+  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 250, height: 100 }));
+  edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
 
-  const fetchData = async () => {
+  dagre.layout(dagreGraph);
+
+  return {
+    nodes: nodes.map((node) => {
+      const nodeWithPosition = dagreGraph.node(node.id);
+      return { ...node, position: { x: nodeWithPosition.x - 125, y: nodeWithPosition.y - 50 } };
+    }),
+    edges,
+  };
+};
+
+export default function ScenarioVisualEditor({ params }: { params: Promise<{ id: string }> }) {
+  const { id: scenarioId } = use(params);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000").replace(/\/$/, "");
+
+  const updateNodeText = useCallback(async (nodeId: number, newText: string) => {
+    setNodes((nds) => nds.map((node) => 
+      node.id === nodeId.toString() ? { ...node, data: { ...node.data, label: newText } } : node
+    ));
+    await fetch(`${apiUrl}/api/admin/nodes/${nodeId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content_text: newText })
+    });
+  }, [apiUrl, setNodes]);
+
+  const updateEdgeLabel = useCallback(async (edgeId: string, newLabel: string) => {
+    const id = edgeId.replace('e', ''); 
+    await fetch(`${apiUrl}/api/admin/options/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ option_text: newLabel })
+    });
+  }, [apiUrl]);
+
+  const fetchData = useCallback(async () => {
+    if (!scenarioId || scenarioId === "undefined") return;
     try {
-        // 1. Get Scenario Details (reuse existing public route or create admin one)
-        // We can define a simple GET /api/admin/scenarios/:id route or just query list
-        // For simplicity, let's just show the ID or generic title if we don't have the specific route ready
-        setScenarioTitle(`Scenario #${id}`); // Placeholder
+      const [nRes, eRes] = await Promise.all([
+        fetch(`${apiUrl}/api/admin/scenarios/${scenarioId}/nodes`),
+        fetch(`${apiUrl}/api/admin/scenarios/${scenarioId}/edges`)
+      ]);
+      const nodesData = await nRes.json();
+      const edgesData = await eRes.json();
 
-        // 2. Get Nodes
-        const res = await fetch(`${cleanUrl}/api/admin/scenarios/${id}/nodes`);
-        const data = await res.json();
-        setNodes(data);
-    } catch (e) { console.error(e); } 
-    finally { setLoading(false); }
-  };
+      if (Array.isArray(nodesData) && Array.isArray(edgesData)) {
+        const initialNodes = nodesData.map((n: any) => ({
+          id: n.id.toString(),
+          type: 'decision',
+          data: { id: n.id, label: n.content_text, is_outcome: n.is_outcome, onChange: updateNodeText },
+          position: { x: 0, y: 0 } 
+        }));
+        const mappedEdges = edgesData.map((e: any) => ({
+          id: `e${e.id}`, 
+          source: e.current_node_id.toString(),
+          target: e.next_node_id.toString(),
+          type: 'editable', 
+          data: { label: e.option_text, onEdgeLabelChange: updateEdgeLabel },
+        }));
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(initialNodes, mappedEdges);
+        setNodes(layoutedNodes);
+        setEdges(layoutedEdges);
+      }
+    } catch (err) { console.error("Load failed:", err); }
+  }, [scenarioId, apiUrl, updateNodeText, updateEdgeLabel]);
 
-  useEffect(() => { fetchData(); }, [id]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if(!formData.content_text) return;
+  // FIX: Added missing onConnect function
+  const onConnect = useCallback(async (params: Connection) => {
+    const res = await fetch(`${apiUrl}/api/admin/options`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        current_node_id: params.source,
+        next_node_id: params.target,
+        option_text: "New Option"
+      })
+    });
+    if (res.ok) fetchData();
+  }, [apiUrl, fetchData]);
 
-    if (editingId) {
-      await fetch(`${cleanUrl}/api/admin/nodes/${editingId}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData)
-      });
-    } else {
-      await fetch(`${cleanUrl}/api/admin/nodes`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ ...formData, scenario_id: id })
-      });
-    }
-    
-    resetForm();
-    fetchData();
-  };
-
-  const handleDelete = async (nodeId: number) => {
-    if(!confirm("Delete this node?")) return;
-    await fetch(`${cleanUrl}/api/admin/nodes/${nodeId}`, { method: 'DELETE' });
-    fetchData();
-  };
-
-  const handleEdit = (node: Node) => {
-    setEditingId(node.id);
-    setFormData({ content_text: node.content_text, is_outcome: node.is_outcome });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const resetForm = () => {
-    setEditingId(null);
-    setFormData({ content_text: '', is_outcome: false });
+  // FIX: Added missing addNewNode function
+  const addNewNode = async () => {
+    const res = await fetch(`${apiUrl}/api/admin/nodes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario_id: scenarioId, content_text: "New Step", is_outcome: false })
+    });
+    if (res.ok) fetchData();
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        
-        <div className="flex items-center mb-6">
-          <Link href="/admin/scenarios" className="text-gray-500 hover:text-gray-700 mr-4">
-            <ArrowLeft className="w-6 h-6" />
+    /* z-[100] ensures we are above global navbars.
+       fixed inset-0 forces the editor to the edges of the browser window.
+    */
+    <main className="fixed inset-0 z-[100] flex flex-col bg-white overflow-hidden">
+      <header className="h-16 border-b bg-white flex justify-between items-center px-6 shadow-sm shrink-0">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/scenarios" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
-          <div>
-             <h2 className="text-sm text-gray-500 font-medium">Manage Nodes for</h2>
-             <h1 className="text-2xl font-bold text-gray-900">{scenarioTitle}</h1>
-          </div>
+          <h1 className="text-xl font-bold text-gray-800">Visual Scenario Editor</h1>
         </div>
+        <button onClick={addNewNode} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 shadow-md">
+          <Plus className="w-4 h-4 mr-1 inline" /> Add Node
+        </button>
+      </header>
 
-        {/* FORM */}
-        <div className={`bg-white p-6 rounded-xl shadow-sm border mb-8 transition-colors ${editingId ? 'border-blue-400 ring-1 ring-blue-200' : 'border-gray-200'}`}>
-            <h3 className="font-bold text-gray-900 mb-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  {editingId ? (
-                    <><Edit2 className="w-4 h-4 mr-2 text-blue-600" /> Edit Node</>
-                  ) : (
-                    <><Plus className="w-4 h-4 mr-2 text-green-600" /> Add New Node (Question/Step)</>
-                  )}
-                </div>
-                {editingId && (
-                  <button onClick={resetForm} className="text-xs text-gray-500 hover:text-gray-800 flex items-center">
-                    <X className="w-3 h-3 mr-1" /> Cancel
-                  </button>
-                )}
-            </h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <textarea 
-                    placeholder="Enter the question text or story outcome..." 
-                    rows={3}
-                    className="w-full p-2 border rounded text-gray-900 focus:ring-2 focus:ring-green-500 outline-none"
-                    value={formData.content_text}
-                    onChange={e => setFormData({...formData, content_text: e.target.value})}
-                    required
-                />
-                
-                <label className="flex items-center space-x-2 cursor-pointer w-fit">
-                    <input 
-                        type="checkbox" 
-                        className="rounded text-green-600 focus:ring-green-500 h-4 w-4"
-                        checked={formData.is_outcome}
-                        onChange={e => setFormData({...formData, is_outcome: e.target.checked})}
-                    />
-                    <span className="text-sm text-gray-700">Is this an Outcome? (End of path)</span>
-                </label>
-
-                <div className="flex justify-end">
-                  <button type="submit" className={`text-white px-6 py-2 rounded hover:opacity-90 text-sm font-medium flex items-center ${editingId ? 'bg-blue-600' : 'bg-green-600'}`}>
-                      <Save className="w-4 h-4 mr-2" />
-                      {editingId ? 'Update Node' : 'Save Node'}
-                  </button>
-                </div>
-            </form>
-        </div>
-
-        {/* LIST */}
-        <div className="space-y-4">
-            {nodes.map(node => (
-                <div key={node.id} className={`bg-white p-4 rounded-lg border flex justify-between items-start ${node.is_outcome ? 'border-l-4 border-l-purple-500' : 'border-gray-200'}`}>
-                    <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-mono text-gray-400">ID: {node.id}</span>
-                            {node.is_outcome && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full flex items-center"><CheckCircle className="w-3 h-3 mr-1"/> Outcome</span>}
-                        </div>
-                        <p className="text-gray-900">{node.content_text}</p>
-                    </div>
-                    <div className="flex items-center gap-2 pl-4">
-                        <button onClick={() => handleEdit(node)} className="text-blue-400 hover:text-blue-600 p-2 rounded-full hover:bg-blue-50 transition-colors" title="Edit">
-                            <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDelete(node.id)} className="text-red-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors" title="Delete">
-                            <Trash2 className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            ))}
-            {nodes.length === 0 && <div className="text-center text-gray-400 py-4">No nodes yet. Add the first question!</div>}
-        </div>
-
+      <div className="flex-grow relative w-full h-full bg-gray-50">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          fitView
+          panOnScroll={true} 
+          selectionOnDrag={true}
+          zoomOnScroll={true}
+          panOnDrag={[1, 2]}
+        >
+          <Background color="#e2e8f0" gap={25} size={1} />
+          <Controls position="bottom-right" />
+          <MiniMap style={{ height: 120, width: 200 }} />
+        </ReactFlow>
       </div>
+
+      {/* This prevents the "double scrollbar" or overlay jitter */}
+      <style jsx global>{`
+        body { overflow: hidden !important; position: fixed; width: 100%; }
+      `}</style>
     </main>
   );
 }

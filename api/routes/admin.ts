@@ -97,6 +97,33 @@ router.get('/scenarios/:id/nodes', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/admin/scenarios/:id/edges (Fetch all connections for the whole scenario)
+router.get('/scenarios/:id/edges', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(`
+      SELECT 
+        no.id, 
+        no.current_node_id, 
+        no.next_node_id, 
+        no.option_text 
+      FROM node_options no
+      JOIN scenario_nodes sn ON no.current_node_id = sn.id
+      WHERE sn.scenario_id = $1
+    `, [id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch edges" });
+  }
+});
+
+router.put('/options/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { option_text } = req.body;
+  await pool.query('UPDATE node_options SET option_text = $1 WHERE id = $2', [option_text, id]);
+  res.json({ message: "Edge updated" });
+});
+
 // POST /api/admin/nodes (Add Node)
 router.post('/nodes', async (req: Request, res: Response) => {
   try {
@@ -137,6 +164,46 @@ router.delete('/nodes/:id', async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete node" });
+  }
+});
+
+// ==========================================
+//               NODE OPTIONS (EDGES)
+// ==========================================
+
+// GET /api/admin/nodes/:id/options (Fetch connections for a specific node)
+router.get('/nodes/:id/options', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM node_options WHERE current_node_id = $1', [id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch options" });
+  }
+});
+
+// POST /api/admin/options (Create a connection)
+router.post('/options', async (req: Request, res: Response) => {
+  try {
+    const { current_node_id, next_node_id, option_text } = req.body;
+    const result = await pool.query(
+      'INSERT INTO node_options (current_node_id, next_node_id, option_text) VALUES ($1, $2, $3) RETURNING *',
+      [current_node_id, next_node_id, option_text || 'Next Step']
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create connection" });
+  }
+});
+
+// DELETE /api/admin/options/:id
+router.delete('/options/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM node_options WHERE id = $1', [id]);
+    res.json({ message: "Connection deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete connection" });
   }
 });
 
