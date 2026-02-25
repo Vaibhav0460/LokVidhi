@@ -53,13 +53,25 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
   }, [apiUrl, setNodes]);
 
   const updateEdgeLabel = useCallback(async (edgeId: string, newLabel: string) => {
+    // 1. Update local state immediately (Optimistic Update)
+    setEdges((eds) => eds.map((edge) => 
+      edge.id === edgeId ? { ...edge, data: { ...edge.data, label: newLabel } } : edge
+    ));
+
+    // 2. Sync with database
     const id = edgeId.replace('e', ''); 
-    await fetch(`${apiUrl}/api/admin/options/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ option_text: newLabel })
-    });
-  }, [apiUrl]);
+    try {
+      await fetch(`${apiUrl}/api/admin/options/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ option_text: newLabel })
+      });
+    } catch (err) {
+      console.error("Failed to sync edge label:", err);
+      // Optional: Re-fetch on error to revert to valid DB state
+      fetchData();
+    }
+  }, [apiUrl, setEdges]);
 
   const fetchData = useCallback(async () => {
     if (!scenarioId || scenarioId === "undefined") return;
@@ -96,6 +108,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
 
   // FIX: Added missing onConnect function
   const onConnect = useCallback(async (params: Connection) => {
+    // 1. Create the option in the DB
     const res = await fetch(`${apiUrl}/api/admin/options`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -105,8 +118,26 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
         option_text: "New Option"
       })
     });
-    if (res.ok) fetchData();
-  }, [apiUrl, fetchData]);
+  
+    if (res.ok) {
+      const newOption = await res.json();
+      
+      // 2. Add the edge to local state MANUALLY with the correct type
+      // This ensures it uses 'EditableEdge' immediately without waiting for fetchData
+      const newEdge = {
+        ...params,
+        id: `e${newOption.id}`,
+        type: 'editable',
+        data: { 
+          label: "New Option", 
+          onEdgeLabelChange: updateEdgeLabel 
+        },
+        markerEnd: { type: MarkerType.ArrowClosed }
+      };
+      
+      setEdges((eds) => addEdge(newEdge, eds));
+    }
+  }, [apiUrl, setEdges, updateEdgeLabel]);
 
   // FIX: Added missing addNewNode function
   const addNewNode = async () => {
