@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect, useCallback, use } from 'react';
 import ReactFlow, { 
@@ -121,8 +122,8 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
     /* z-[100] ensures we are above global navbars.
        fixed inset-0 forces the editor to the edges of the browser window.
     */
-    <main className="fixed inset-0 z-[100] flex flex-col bg-white overflow-hidden">
-      <header className="h-16 border-b bg-white flex justify-between items-center px-6 shadow-sm shrink-0">
+    <main className="fixed inset-0 inset-0 z-[100] flex flex-col bg-white overflow-hidden">
+      <header className="h-16 shrink-0 border-b bg-white flex justify-between items-center px-6 shadow-sm shrink-0">
         <div className="flex items-center gap-4">
           <Link href="/admin/scenarios" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -148,6 +149,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
           selectionOnDrag={true}
           zoomOnScroll={true}
           panOnDrag={[1, 2]}
+          style={{width:'100%', height:"100%"}}
         >
           <Background color="#e2e8f0" gap={25} size={1} />
           <Controls position="bottom-right" />
