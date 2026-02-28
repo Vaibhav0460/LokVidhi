@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, AlertTriangle } from 'lucide-react';
+// NEW: Import react-markdown
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: number;
@@ -22,7 +24,6 @@ export default function ChatbotPage() {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -34,13 +35,14 @@ export default function ChatbotPage() {
     const userText = input;
     setInput('');
 
-    // Add user message
     const userMsg: Message = { id: Date.now(), role: 'user', text: userText };
     setMessages(prev => [...prev, userMsg]);
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:4000/api/chatbot/query', {
+      // PRO TIP: Change 'localhost' to an environment variable for deployment
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      const res = await fetch(`${apiUrl}/api/chatbot/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userText }),
@@ -74,39 +76,59 @@ export default function ChatbotPage() {
   return (
     <main className="flex-1 w-full flex flex-col bg-gray-50 overflow-hidden">
       
-      {/* Chat Container - Scrollbar stays on the edge */}
       <div className="flex-1 overflow-y-auto p-4">
-        
-        {/* Content Wrapper - Centers the messages */}
-        <div className="max-w-4xl mx-auto space-y-6 w-full"> {/* Added w-full to ensure full usage of max-width */}
+        <div className="max-w-4xl mx-auto space-y-6 w-full">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 
-                {/* Avatar */}
                 <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center mx-2 ${msg.role === 'user' ? 'bg-blue-600' : 'bg-green-600'}`}>
                   {msg.role === 'user' ? <User className="text-white w-5 h-5" /> : <Bot className="text-white w-5 h-5" />}
                 </div>
 
-                {/* Bubble */}
-                <div className={`p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${
+                <div className={`p-4 rounded-2xl shadow-sm text-sm ${
                   msg.role === 'user' 
                     ? 'bg-blue-600 text-white rounded-tr-none' 
                     : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none'
                 }`}>
-                  <p className="whitespace-pre-wrap">{msg.text}</p>
+                  {/* NEW: Updated to use ReactMarkdown with custom styles */}
+                  <div className="markdown-container">
+                    <ReactMarkdown
+                      components={{
+                        // Custom styling for headers and lists
+                        p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                        strong: ({ children }) => <strong className="font-bold text-inherit">{children}</strong>,
+                        ul: ({ children }) => <ul className="list-disc ml-5 mb-2 space-y-1">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal ml-5 mb-2 space-y-1">{children}</ol>,
+                        li: ({ children }) => <li className="pl-1">{children}</li>,
+                        hr: () => <hr className="my-4 border-gray-200 opacity-30" />,
+                        // Style for legal disclaimers at the bottom
+                        em: ({ children }) => <em className="italic opacity-80 text-xs block mt-2">{children}</em>,
+                      }}
+                    >
+                      {msg.text}
+                    </ReactMarkdown>
+                  </div>
                   
-                  {/* Sources Section */}
                   {msg.sources && msg.sources.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-gray-200/20">
-                      <p className="text-xs font-semibold mb-1 opacity-80 flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
-                        Sources:
-                      </p>
-                      <ul className="space-y-1">
+                    <div className="mt-4 pt-3 border-t border-gray-100">
+                      <div className="text-[10px] font-bold mb-2 opacity-60 uppercase tracking-widest flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        Legal Sources:
+                      </div>
+                      <ul className="flex flex-wrap gap-2">
                         {msg.sources.map((source, idx) => (
                           <li key={idx}>
-                            <a href={source.uri} target="_blank" rel="noopener noreferrer" className="text-xs underline opacity-90 hover:opacity-100 truncate block">
+                            <a 
+                              href={source.uri} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className={`inline-block px-2 py-1 rounded border text-[10px] transition-colors ${
+                                msg.role === 'user'
+                                ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                                : 'bg-gray-50 border-gray-200 text-blue-600 hover:bg-blue-50'
+                              }`}
+                            >
                               {source.title}
                             </a>
                           </li>
@@ -120,17 +142,16 @@ export default function ChatbotPage() {
             </div>
           ))}
           
-          {/* Loading State */}
           {loading && (
             <div className="flex justify-start">
                <div className="flex-shrink-0 h-8 w-8 rounded-full bg-green-600 flex items-center justify-center mx-2">
                   <Bot className="text-white w-5 h-5" />
                </div>
-               <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
+               <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
                  <div className="flex space-x-1.5">
-                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
-                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+                   <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+                   <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce delay-100"></div>
+                   <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce delay-200"></div>
                  </div>
                </div>
             </div>
@@ -139,7 +160,6 @@ export default function ChatbotPage() {
         </div>
       </div>
 
-      {/* Input Area */}
       <div className="bg-white border-t border-gray-200 p-4">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSend} className="relative flex items-center">
@@ -149,19 +169,19 @@ export default function ChatbotPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a legal question..."
               disabled={loading}
-              className="w-full py-3 pl-5 pr-12 bg-gray-100 text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all border-transparent focus:border-blue-500"
+              className="w-full py-4 pl-6 pr-14 bg-gray-50 text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all border border-gray-200"
             />
             <button 
               type="submit" 
               disabled={loading || !input.trim()}
-              className="absolute right-2 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="absolute right-3 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md active:scale-95"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
             </button>
           </form>
-          <div className="flex justify-center items-center mt-3 gap-1.5 text-xs text-gray-400">
-            <AlertTriangle className="w-3 h-3" />
-            <span>Bot can make mistakes. Not a substitute for a lawyer.</span>
+          <div className="flex justify-center items-center mt-3 gap-1.5 text-[10px] text-gray-400 font-medium">
+            <AlertTriangle className="w-3 h-3 text-amber-500" />
+            <span className="uppercase tracking-tight">AI can misinterpret laws. Consult a verified legal professional.</span>
           </div>
         </div>
       </div>

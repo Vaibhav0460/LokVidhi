@@ -20,14 +20,12 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   
-  // CHANGE 1: Increased nodesep and ranksep to prevent node overlapping
   dagreGraph.setGraph({ 
     rankdir: direction,
     nodesep: 120, 
     ranksep: 100 
   });
 
-  // CHANGE 2: Increased node dimensions to match the actual node sizes and prevent crowding
   nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 320, height: 150 }));
   edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
 
@@ -65,7 +63,6 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
       edge.id === edgeId ? { ...edge, data: { ...edge.data, label: newLabel } } : edge
     ));
 
-    // 2. Sync with database
     const id = edgeId.replace('e', ''); 
     try {
       await fetch(`${apiUrl}/api/admin/options/${id}`, {
