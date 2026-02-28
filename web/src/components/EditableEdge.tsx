@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { EdgeProps, getBezierPath, EdgeLabelRenderer } from 'reactflow';
 
 export default function EditableEdge({
@@ -7,6 +7,16 @@ export default function EditableEdge({
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition,
   });
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize the height of the label as text wraps
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [data?.label]);
 
   return (
     <>
@@ -20,11 +30,19 @@ export default function EditableEdge({
           }}
           className="nodrag nopan"
         >
-          <input
-            className="text-xs font-bold border-2 border-green-200 rounded-lg px-2 py-1 bg-white text-green-700 shadow-sm outline-none focus:border-green-500 text-center"
-            style={{ width: `${Math.max(80, (data?.label?.length || 0) * 8)}px` }}
+          {/* CHANGE: Switched from input to textarea for auto-wrapping.
+            Added 'whitespace-pre-wrap' and a 'max-w' to force wrapping.
+          */}
+          <textarea
+            ref={textareaRef}
+            className="text-xs font-bold border-2 border-green-200 rounded-lg px-2 py-1 bg-white text-green-700 shadow-sm outline-none focus:border-green-500 text-center resize-none overflow-hidden whitespace-pre-wrap break-words"
+            style={{ 
+              width: '120px', // Fixed width to trigger wrapping
+              minHeight: '24px'
+            }}
             value={data?.label || ""}
             onChange={(e) => data?.onEdgeLabelChange(id, e.target.value)}
+            rows={1}
           />
         </div>
       </EdgeLabelRenderer>

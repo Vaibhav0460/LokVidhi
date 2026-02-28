@@ -19,9 +19,16 @@ const nodeTypes = { decision: DecisionNode };
 const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({ rankdir: direction });
+  
+  // CHANGE 1: Increased nodesep and ranksep to prevent node overlapping
+  dagreGraph.setGraph({ 
+    rankdir: direction,
+    nodesep: 120, 
+    ranksep: 100 
+  });
 
-  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 250, height: 100 }));
+  // CHANGE 2: Increased node dimensions to match the actual node sizes and prevent crowding
+  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 320, height: 150 }));
   edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
 
   dagre.layout(dagreGraph);
@@ -68,7 +75,6 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
       });
     } catch (err) {
       console.error("Failed to sync edge label:", err);
-      // Optional: Re-fetch on error to revert to valid DB state
       fetchData();
     }
   }, [apiUrl, setEdges]);
@@ -106,9 +112,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // FIX: Added missing onConnect function
   const onConnect = useCallback(async (params: Connection) => {
-    // 1. Create the option in the DB
     const res = await fetch(`${apiUrl}/api/admin/options`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -122,8 +126,6 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
     if (res.ok) {
       const newOption = await res.json();
       
-      // 2. Add the edge to local state MANUALLY with the correct type
-      // This ensures it uses 'EditableEdge' immediately without waiting for fetchData
       const newEdge = {
         ...params,
         id: `e${newOption.id}`,
@@ -139,7 +141,6 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
     }
   }, [apiUrl, setEdges, updateEdgeLabel]);
 
-  // FIX: Added missing addNewNode function
   const addNewNode = async () => {
     const res = await fetch(`${apiUrl}/api/admin/nodes`, {
       method: 'POST',
@@ -150,10 +151,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
   };
 
   return (
-    /* z-[100] ensures we are above global navbars.
-       fixed inset-0 forces the editor to the edges of the browser window.
-    */
-    <main className="fixed inset-0 inset-0 z-[100] flex flex-col bg-white overflow-hidden">
+    <main className="fixed inset-0 z-[100] flex flex-col bg-white overflow-hidden">
       <header className="h-16 shrink-0 border-b bg-white flex justify-between items-center px-6 shadow-sm shrink-0">
         <div className="flex items-center gap-4">
           <Link href="/admin/scenarios" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -176,10 +174,12 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
+          fitViewOptions={{ padding: 0.2 }}
+          minZoom={0.1}
           panOnScroll={true} 
-          selectionOnDrag={true}
+          selectionOnDrag={false}
           zoomOnScroll={true}
-          panOnDrag={[1, 2]}
+          panOnDrag={true}
           style={{width:'100%', height:"100%"}}
         >
           <Background color="#e2e8f0" gap={25} size={1} />
@@ -188,7 +188,6 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
         </ReactFlow>
       </div>
 
-      {/* This prevents the "double scrollbar" or overlay jitter */}
       <style jsx global>{`
         body { overflow: hidden !important; position: fixed; width: 100%; }
       `}</style>
