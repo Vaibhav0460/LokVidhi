@@ -57,8 +57,26 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
     });
   }, [apiUrl, setNodes]);
 
+  // CHANGE 1: Added toggleNodeOutcome handler to sync is_outcome state with backend
+  const toggleNodeOutcome = useCallback(async (nodeId: number, isOutcome: boolean) => {
+    // Optimistic UI update
+    setNodes((nds) => nds.map((node) => 
+      node.id === nodeId.toString() ? { ...node, data: { ...node.data, is_outcome: isOutcome } } : node
+    ));
+
+    try {
+      await fetch(`${apiUrl}/api/admin/nodes/${nodeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_outcome: isOutcome })
+      });
+    } catch (err) {
+      console.error("Failed to toggle outcome:", err);
+      fetchData(); // Revert on failure
+    }
+  }, [apiUrl, setNodes]);
+
   const updateEdgeLabel = useCallback(async (edgeId: string, newLabel: string) => {
-    // 1. Update local state immediately (Optimistic Update)
     setEdges((eds) => eds.map((edge) => 
       edge.id === edgeId ? { ...edge, data: { ...edge.data, label: newLabel } } : edge
     ));
@@ -90,7 +108,14 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
         const initialNodes = nodesData.map((n: any) => ({
           id: n.id.toString(),
           type: 'decision',
-          data: { id: n.id, label: n.content_text, is_outcome: n.is_outcome, onChange: updateNodeText },
+          data: { 
+            id: n.id, 
+            label: n.content_text, 
+            is_outcome: n.is_outcome, 
+            onChange: updateNodeText,
+            // CHANGE 2: Passing the toggle function to the DecisionNode
+            onToggleOutcome: toggleNodeOutcome 
+          },
           position: { x: 0, y: 0 } 
         }));
         const mappedEdges = edgesData.map((e: any) => ({
@@ -105,7 +130,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
         setEdges(layoutedEdges);
       }
     } catch (err) { console.error("Load failed:", err); }
-  }, [scenarioId, apiUrl, updateNodeText, updateEdgeLabel]);
+  }, [scenarioId, apiUrl, updateNodeText, toggleNodeOutcome, updateEdgeLabel]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

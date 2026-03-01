@@ -13,7 +13,7 @@ export default function AddScenarioPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    difficulty: 'Beginner',
+    difficulty_level: 'Beginner',
     category: 'General' // NEW: Added category to state
   });
 
@@ -66,7 +66,6 @@ export default function AddScenarioPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* NEW: Category (Umbrella) Input */}
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                 <Layers className="w-4 h-4 mr-1.5 text-blue-500" />
@@ -113,8 +112,8 @@ export default function AddScenarioPage() {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Difficulty Level</label>
               <select
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 bg-white transition-all cursor-pointer"
-                value={formData.difficulty}
-                onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
+                value={formData.difficulty_level}
+                onChange={(e) => setFormData({...formData, difficulty_level: e.target.value})}
               >
                 <option value="Beginner">Beginner</option>
                 <option value="Intermediate">Intermediate</option>

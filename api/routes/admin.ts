@@ -140,19 +140,19 @@ router.post('/nodes', async (req: Request, res: Response) => {
 });
 
 // PUT /api/admin/nodes/:id (Update Node)
-router.put('/nodes/:id', async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { content_text, is_outcome } = req.body;
-    await pool.query(
-      'UPDATE scenario_nodes SET content_text = $1, is_outcome = $2 WHERE id = $3',
-      [content_text, is_outcome, id]
-    );
-    res.json({ message: "Node updated" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to update node" });
-  }
+router.put('/nodes/:id', async (req, res) => {
+  const { id } = req.params;
+  const { content_text, is_outcome } = req.body;
+
+  // Dynamically build the update query based on provided fields
+  const result = await pool.query(
+    `UPDATE scenario_nodes 
+     SET content_text = COALESCE($1, content_text), 
+         is_outcome = COALESCE($2, is_outcome) 
+     WHERE id = $3 RETURNING *`,
+    [content_text, is_outcome, id]
+  );
+  res.json(result.rows[0]);
 });
 
 // DELETE /api/admin/nodes/:id
