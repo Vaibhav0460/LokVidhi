@@ -1,49 +1,45 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Trophy, MessageSquare } from 'lucide-react';
+import { Trophy, Circle } from 'lucide-react';
 
-const DecisionNode = ({ data, id }: NodeProps) => {
+const DecisionNode = ({ data }: NodeProps) => {
   return (
-    <div className={`px-4 py-3 shadow-md rounded-xl border-2 bg-white min-w-[200px] ${
-      data.is_outcome ? 'border-green-500 bg-green-50' : 'border-blue-200'
-    }`}>
-      <Handle type="target" position={Position.Left} className="w-3 h-3 bg-blue-400" />
+    <div 
+      // Double-click to toggle outcome state - fast and keeps UI clean
+      onDoubleClick={() => data.onToggleOutcome(data.id, !data.is_outcome)}
+      className={`px-4 py-3 shadow-sm rounded-xl border-2 bg-white transition-all duration-300 select-none min-w-[250px] ${
+        data.is_outcome 
+          ? 'border-green-500 ring-4 ring-green-50' 
+          : 'border-slate-200 hover:border-blue-400'
+      }`}
+    >
+      <Handle type="target" position={Position.Left} className="w-2 h-2 !bg-slate-400 border-none" />
       
-      <div className="flex flex-col">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            {data.is_outcome ? (
-              <Trophy className="w-4 h-4 text-green-600" />
-            ) : (
-              <MessageSquare className="w-4 h-4 text-blue-500" />
-            )}
-            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              {data.is_outcome ? 'Outcome' : 'Decision Step'}
-            </span>
-          </div>
-          
-          {/* NEW: Toggle Switch for Outcome */}
-          <button 
-            onClick={() => data.onToggleOutcome(data.id, !data.is_outcome)}
-            className={`text-[9px] px-2 py-0.5 rounded-full font-bold transition-all ${
-              data.is_outcome 
-                ? 'bg-green-600 text-white' 
-                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-            }`}
-          >
-            {data.is_outcome ? 'Set as Step' : 'Set as Outcome'}
-          </button>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <span className={`text-[9px] font-black uppercase tracking-widest ${
+            data.is_outcome ? 'text-green-600' : 'text-slate-400'
+          }`}>
+            {data.is_outcome ? 'Final Outcome' : 'Decision Step'}
+          </span>
+          {data.is_outcome && <Trophy className="w-3 h-3 text-green-500" />}
         </div>
 
+        {/* Standard input without forced scrolling */}
         <textarea
-          className="text-sm font-semibold text-gray-800 bg-transparent border-none outline-none resize-none w-full"
+          className="text-sm font-semibold text-slate-700 bg-transparent border-none outline-none resize-none w-full leading-snug overflow-hidden"
           value={data.label}
           rows={2}
           onChange={(e) => data.onChange(data.id, e.target.value)}
+          placeholder="Enter legal instruction..."
         />
+        
+        <p className="text-[8px] text-slate-300 italic text-right mt-1">
+          Double-click to toggle outcome
+        </p>
       </div>
 
-      <Handle type="source" position={Position.Right} className="w-3 h-3 bg-blue-400" />
+      <Handle type="source" position={Position.Right} className="w-2 h-2 !bg-slate-400 border-none" />
     </div>
   );
 };

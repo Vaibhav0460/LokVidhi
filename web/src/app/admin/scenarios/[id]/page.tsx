@@ -22,11 +22,11 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
   
   dagreGraph.setGraph({ 
     rankdir: direction,
-    nodesep: 120, 
-    ranksep: 100 
+    nodesep: 50, 
+    ranksep: 120 
   });
 
-  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 320, height: 150 }));
+  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 260, height: 100 }));
   edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
 
   dagre.layout(dagreGraph);
@@ -34,7 +34,10 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
   return {
     nodes: nodes.map((node) => {
       const nodeWithPosition = dagreGraph.node(node.id);
-      return { ...node, position: { x: nodeWithPosition.x - 125, y: nodeWithPosition.y - 50 } };
+      return { 
+        ...node, 
+        position: { x: nodeWithPosition.x - 130, y: nodeWithPosition.y - 50 } 
+      };
     }),
     edges,
   };
