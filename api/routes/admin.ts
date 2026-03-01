@@ -40,10 +40,10 @@ router.get('/scenarios', async (req: Request, res: Response) => {
 // POST /api/admin/scenarios (Create)
 router.post('/scenarios', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, description, difficulty } = req.body;
+    const { title, description, difficulty_level, category } = req.body;
     const result = await pool.query(
-      'INSERT INTO scenarios (title, description, difficulty_level) VALUES ($1, $2, $3) RETURNING *',
-      [title, description, difficulty || 'Beginner']
+      'INSERT INTO scenarios (title, description, difficulty_level, category) VALUES ($1, $2, $3, $4) RETURNING *',
+      [title, description, difficulty_level, category || 'General']
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -56,10 +56,10 @@ router.post('/scenarios', async (req: Request, res: Response): Promise<void> => 
 router.put('/scenarios/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, description, difficulty_level } = req.body;
+    const { title, description, difficulty_level, category } = req.body;
     await pool.query(
-      'UPDATE scenarios SET title = $1, description = $2, difficulty_level = $3 WHERE id = $4',
-      [title, description, difficulty_level, id]
+      'UPDATE scenarios SET title = $1, description = $2, difficulty_level = $3, category = $4 WHERE id = $5',
+      [title, description, difficulty_level, category, id]
     );
     res.json({ message: "Scenario updated" });
   } catch (err) {
