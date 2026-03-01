@@ -16,17 +16,18 @@ import { ArrowLeft, Plus } from 'lucide-react';
 const edgeTypes = { editable: EditableEdge };
 const nodeTypes = { decision: DecisionNode };
 
+// REVERTED: Restoring your original "careful" spacing values for the layout
 const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   
   dagreGraph.setGraph({ 
     rankdir: direction,
-    nodesep: 50, 
-    ranksep: 120 
+    nodesep: 80, 
+    ranksep: 140 
   });
 
-  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 260, height: 100 }));
+  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 300, height: 100 }));
   edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
 
   dagre.layout(dagreGraph);
@@ -36,7 +37,7 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
       const nodeWithPosition = dagreGraph.node(node.id);
       return { 
         ...node, 
-        position: { x: nodeWithPosition.x - 130, y: nodeWithPosition.y - 50 } 
+        position: { x: nodeWithPosition.x - 160, y: nodeWithPosition.y - 60 } 
       };
     }),
     edges,
@@ -49,6 +50,35 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000").replace(/\/$/, "");
 
+  // IMPROVED: Edge Deletion Handler
+  const onEdgesDelete = useCallback(async (edgesToDelete: any[]) => {
+    for (const edge of edgesToDelete) {
+      const edgeId = edge.id.replace('e', '');
+      try {
+        const res = await fetch(`${apiUrl}/api/admin/options/${edgeId}`, { method: 'DELETE' });
+        if (!res.ok) console.error(`Failed to delete edge ${edgeId} from DB`);
+      } catch (err) {
+        console.error("Failed to sync edge deletion:", err);
+      }
+    }
+  }, [apiUrl]);
+
+  // IMPROVED: Node Deletion Handler
+  const deleteNode = useCallback(async (nodeId: number) => {
+    if (!window.confirm("Deleting this node will remove all associated connections. Proceed?")) return;
+
+    try {
+      const res = await fetch(`${apiUrl}/api/admin/nodes/${nodeId}`, { method: 'DELETE' });
+      if (res.ok) {
+        // UI Cleanup: Filter out node and all connected edges
+        setNodes((nds) => nds.filter((n) => n.id !== nodeId.toString()));
+        setEdges((eds) => eds.filter((e) => e.source !== nodeId.toString() && e.target !== nodeId.toString()));
+      }
+    } catch (err) {
+      console.error("Failed to delete node:", err);
+    }
+  }, [apiUrl, setNodes, setEdges]);
+
   const updateNodeText = useCallback(async (nodeId: number, newText: string) => {
     setNodes((nds) => nds.map((node) => 
       node.id === nodeId.toString() ? { ...node, data: { ...node.data, label: newText } } : node
@@ -60,9 +90,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
     });
   }, [apiUrl, setNodes]);
 
-  // CHANGE 1: Added toggleNodeOutcome handler to sync is_outcome state with backend
   const toggleNodeOutcome = useCallback(async (nodeId: number, isOutcome: boolean) => {
-    // Optimistic UI update
     setNodes((nds) => nds.map((node) => 
       node.id === nodeId.toString() ? { ...node, data: { ...node.data, is_outcome: isOutcome } } : node
     ));
@@ -75,7 +103,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
       });
     } catch (err) {
       console.error("Failed to toggle outcome:", err);
-      fetchData(); // Revert on failure
+      fetchData();
     }
   }, [apiUrl, setNodes]);
 
@@ -116,24 +144,29 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
             label: n.content_text, 
             is_outcome: n.is_outcome, 
             onChange: updateNodeText,
-            // CHANGE 2: Passing the toggle function to the DecisionNode
-            onToggleOutcome: toggleNodeOutcome 
+            onToggleOutcome: toggleNodeOutcome,
+            onDeleteNode: deleteNode 
           },
           position: { x: 0, y: 0 } 
         }));
+        
+        // FIX: Added 'selectable: true' so edges can be highlighted and deleted
         const mappedEdges = edgesData.map((e: any) => ({
           id: `e${e.id}`, 
           source: e.current_node_id.toString(),
           target: e.next_node_id.toString(),
           type: 'editable', 
+          selectable: true, 
           data: { label: e.option_text, onEdgeLabelChange: updateEdgeLabel },
+          markerEnd: { type: MarkerType.ArrowClosed }
         }));
+
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(initialNodes, mappedEdges);
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
       }
     } catch (err) { console.error("Load failed:", err); }
-  }, [scenarioId, apiUrl, updateNodeText, toggleNodeOutcome, updateEdgeLabel]);
+  }, [scenarioId, apiUrl, updateNodeText, toggleNodeOutcome, deleteNode, updateEdgeLabel]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -150,18 +183,14 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
   
     if (res.ok) {
       const newOption = await res.json();
-      
       const newEdge = {
         ...params,
         id: `e${newOption.id}`,
         type: 'editable',
-        data: { 
-          label: "New Option", 
-          onEdgeLabelChange: updateEdgeLabel 
-        },
+        selectable: true,
+        data: { label: "New Option", onEdgeLabelChange: updateEdgeLabel },
         markerEnd: { type: MarkerType.ArrowClosed }
       };
-      
       setEdges((eds) => addEdge(newEdge, eds));
     }
   }, [apiUrl, setEdges, updateEdgeLabel]);
@@ -177,7 +206,7 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
 
   return (
     <main className="fixed inset-0 z-[100] flex flex-col bg-white overflow-hidden">
-      <header className="h-16 shrink-0 border-b bg-white flex justify-between items-center px-6 shadow-sm shrink-0">
+      <header className="h-16 shrink-0 border-b bg-white flex justify-between items-center px-6 shadow-sm">
         <div className="flex items-center gap-4">
           <Link href="/admin/scenarios" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -196,15 +225,22 @@ export default function ScenarioVisualEditor({ params }: { params: Promise<{ id:
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onEdgesDelete={onEdgesDelete} 
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
-          fitViewOptions={{ padding: 0.2 }}
+          fitViewOptions={{ padding: 0.5,
+            includeHiddenNodes: true,
+            duration: 400
+           }}
           minZoom={0.1}
+          maxZoom={1.5}
           panOnScroll={true} 
           selectionOnDrag={false}
           zoomOnScroll={true}
           panOnDrag={true}
+          // Allows deletion using Backspace or Delete keys
+          deleteKeyCode={["Backspace", "Delete"]}
           style={{width:'100%', height:"100%"}}
         >
           <Background color="#e2e8f0" gap={25} size={1} />
