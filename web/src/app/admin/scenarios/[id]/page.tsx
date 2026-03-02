@@ -16,20 +16,24 @@ import { ArrowLeft, Plus } from 'lucide-react';
 const edgeTypes = { editable: EditableEdge };
 const nodeTypes = { decision: DecisionNode };
 
-// REVERTED: Restoring your original "careful" spacing values for the layout
 const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   
   dagreGraph.setGraph({ 
     rankdir: direction,
-    nodesep: 80, 
-    ranksep: 140 
+    nodesep: 100, 
+    ranksep: 200 
   });
 
-  nodes.forEach((node) => dagreGraph.setNode(node.id, { width: 300, height: 100 }));
-  edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
+  nodes.forEach((node) => {
+    const textLength = node.data.label?.length || 0;
+    const estimatedHeight = Math.max(100, 60 + Math.ceil(textLength / 35) * 20);
+    
+    dagreGraph.setNode(node.id, { width: 320, height: estimatedHeight });
+  });
 
+  edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
   dagre.layout(dagreGraph);
 
   return {
@@ -37,7 +41,11 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'LR') => {
       const nodeWithPosition = dagreGraph.node(node.id);
       return { 
         ...node, 
-        position: { x: nodeWithPosition.x - 160, y: nodeWithPosition.y - 60 } 
+        position: { 
+          x: nodeWithPosition.x - 160, 
+          // Center the node vertically based on its specific calculated height
+          y: nodeWithPosition.y - (nodeWithPosition.height / 2) 
+        } 
       };
     }),
     edges,
