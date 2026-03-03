@@ -70,7 +70,6 @@ export default function HomePage() {
             <p className="text-sm text-slate-500 leading-relaxed mb-8 font-medium">
               Experience the law through decision-based storytelling. Navigate traffic violations, workplace disputes, or property issues with real-time consequences.
             </p>
-            [Image of a legal decision tree flowchart]
             <Link href="/scenario" className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-blue-600 flex items-center gap-2 transition-colors">
               Enter Hub <ArrowUpRight className="w-3 h-3" />
             </Link>
