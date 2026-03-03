@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { BookOpen, Briefcase, Gavel, Car, AlertTriangle, Layers, ChevronRight } from 'lucide-react';
+import { BookOpen, Briefcase, Gavel, Car, AlertTriangle, Layers, ChevronRight, ArrowRight } from 'lucide-react';
 
 interface Scenario {
   id: number;
@@ -52,70 +52,71 @@ export default function ScenarioHub() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 bg-gray-50">
+    <main className="flex min-h-screen flex-col items-center p-6 bg-[#FCFCFD]">
       <div className="max-w-6xl w-full">
         
-        {/* Header - Scaled down even more */}
-        <div className="text-center py-6">
-          <h1 className="text-2xl font-black text-gray-900 mb-1 tracking-tight uppercase">
-            Scenario Hub
+        {/* Refined Header */}
+        <div className="text-left py-10 border-b border-slate-100 mb-10">
+          <h1 className="text-3xl font-light text-slate-900 tracking-tight">
+            Legal <span className="font-semibold">Scenarios</span>
           </h1>
-          <p className="text-xs text-gray-500 font-medium">
-            Select a legal path to begin interactive learning.
+          <p className="text-sm text-slate-500 mt-2 font-medium">
+            Interactive decision-based learning paths.
           </p>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20 text-gray-400 text-xs font-bold animate-pulse uppercase tracking-widest">
-            Loading Scenarios...
+          <div className="flex justify-center py-20 text-slate-300 text-[10px] font-bold uppercase tracking-[0.2em]">
+            Synchronizing Scenarios...
           </div>
         ) : (
           Object.entries(groupedScenarios).map(([category, items]) => (
-            <section key={category} className="mb-8">
+            <section key={category} className="mb-12">
               
-              {/* Umbrella Heading - Tighter UI */}
-              <div className="flex items-center gap-2 mb-3 border-b-2 border-gray-100 pb-2">
-                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-tighter">
+              {/* SOPHISTICATED UMBRELLA HEADING */}
+              <div className="flex items-center gap-4 mb-6 group">
+                <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.25em] whitespace-nowrap">
                   {category}
-                </span>
-                <span className="h-[1px] flex-grow bg-gray-100"></span>
-                <span className="text-[9px] font-bold text-gray-400 bg-white px-2 border border-gray-100 rounded-full">
-                  {items.length} Units
+                </h2>
+                <div className="h-[1px] flex-grow bg-slate-100 group-hover:bg-blue-100 transition-colors"></div>
+                <span className="text-[10px] font-medium text-slate-400 tabular-nums">
+                  {items.length.toString().padStart(2, '0')}
                 </span>
               </div>
 
-              {/* GRID FIX: Moved to 4 columns on large screens to reduce card width */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {/* Sophisticated 4-Column Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                 {items.map((scenario) => (
                   <Link 
                     key={scenario.id} 
                     href={`/scenario/${scenario.id}`}
-                    // Added mx-auto and max-w-sm to prevent over-stretching
-                    className="flex flex-col p-4 bg-white rounded-lg border border-slate-200 transition-all duration-200 hover:border-blue-400 hover:shadow-sm group w-full max-w-[300px] mx-auto sm:mx-0"
+                    className="flex flex-col p-5 bg-white rounded-lg border border-slate-100 transition-all duration-300 hover:border-blue-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] group w-full max-w-[280px] mx-auto sm:mx-0"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="p-2 bg-slate-50 rounded group-hover:bg-blue-50 transition-colors">
+                    <div className="flex items-start justify-between mb-5">
+                      <div className="p-2.5 bg-slate-50 rounded-md group-hover:bg-blue-50 group-hover:text-blue-600 text-slate-400 transition-all">
                         {getIcon(scenario.title)}
                       </div>
-                      <span className={`text-[8px] uppercase font-black px-1.5 py-0.5 rounded border ${
-                        scenario.difficulty_level === "Beginner" ? "border-green-200 text-green-600" :
-                        scenario.difficulty_level === "Intermediate" ? "border-amber-200 text-amber-600" :
-                        "border-red-200 text-red-600"
+
+                      {/* SOPHISTICATED DIFFICULTY TAG */}
+                      <span className={`text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded-sm border ${
+                        scenario.difficulty_level === "Beginner" ? "border-emerald-100 text-emerald-600 bg-emerald-50/30" :
+                        scenario.difficulty_level === "Intermediate" ? "border-amber-100 text-amber-600 bg-amber-50/30" :
+                        "border-rose-100 text-rose-600 bg-rose-50/30"
                       }`}>
                         {scenario.difficulty_level}
                       </span>
                     </div>
                     
-                    <h3 className="text-sm font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors line-clamp-1 leading-tight">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1 leading-tight tracking-tight">
                       {scenario.title}
                     </h3>
                     
-                    <p className="text-[11px] text-slate-500 leading-snug mb-4 flex-grow line-clamp-2">
+                    <p className="text-[12px] text-slate-500 leading-relaxed mb-6 flex-grow line-clamp-2 font-medium opacity-80">
                       {scenario.description}
                     </p>
                     
-                    <div className="flex items-center text-blue-600 font-black text-[9px] uppercase tracking-tighter group-hover:gap-1 transition-all">
-                      Open Case <ChevronRight className="w-3 h-3" />
+                    <div className="flex items-center gap-2 text-slate-400 group-hover:text-blue-600 font-bold text-[10px] uppercase tracking-[0.15em] transition-all">
+                      Explore Case <ArrowRight className="w-3 h-3 translate-y-[-1px] group-hover:translate-x-1 transition-transform" />
                     </div>
                   </Link>
                 ))}
