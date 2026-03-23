@@ -40,18 +40,6 @@ The landing page features our core offerings:
 
 ---
 
-## 🛠️ Admin CMS (New!)
-
-![Admin Panel](./docs/_assets/Admin.png)
-
-The newly implemented **Admin Dashboard** allows moderators to maintain the platform's accuracy without touching the codebase:
-
-* **Content Management:** Create and update legal acts and their respective sections.
-* **Scenario Management:** Edit the interactive logic of legal walkthroughs.
-* **Moderator Tools:** Manage the site and handle administrative tasks through a dedicated interface.
-
----
-
 ## 🎭 Interactive Scenarios
 
 ![Scenarios Page](./docs/_assets/Scenarios.png)
@@ -84,12 +72,38 @@ Verify if your security deposit adheres to the Model Tenancy Act principles.
 
 ---
 
+## 🛠️ Admin CMS
+
+![Admin Panel](./docs/_assets/Admin.png)
+
+The newly implemented **Admin Dashboard** allows moderators to maintain the platform's accuracy without touching the codebase:
+
+* **Content Management:** Create and update legal acts and their respective sections.
+* **Scenario Management:** Edit the interactive logic of legal walkthroughs.
+* **Moderator Tools:** Manage the site and handle administrative tasks through a dedicated interface.
+
+---
+
+## 🏗️ Virtual Scenario Editor
+
+![Virtual Scenario Editor](./docs/_assets/VSE.png)
+
+The **"Logic Engine"** of LokVidhi is our custom-built Node-Based Scenario Creator, which allows legal experts to build complex decision trees without writing a single line of code:
+
+* **Drag-and-Drop Canvas:** A visual interface (React-powered) where legal "What-if" paths are mapped as interconnected nodes.
+* **Dynamic JSON Orchestration:** Automatically transforms visual flows into modular JSON trees, decoupling complex legal logic from the frontend UI.
+* **Real-time Validation:** Built-in logic checks to identify circular references or dead-end paths, ensuring a seamless experience for the end-user.
+* **Instant Preview:** A "Sandbox Mode" that allows moderators to simulate the citizen's journey through a scenario before it goes live.
+
+---
+
 ## 🛠️ Tech Stack
 
 **Frontend & Backend**
 * **Next.js & TypeScript:** Powering the web interface and page routing.
 * **Tailwind CSS:** For a clean, modern UI.
 * **Node.js (Express):** Handling API logic and calculator services.
+* **React Flow:** Powering the Visual Scenario Editor.
 
 **Database & Infrastructure**
 * **Supabase (PostgreSQL):** Managing our legal database and user sessions.
