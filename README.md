@@ -47,7 +47,7 @@ The landing page features our core offerings:
 Each scenario teaches legal concepts through narrative choices, such as the **"Salary Not Paid?"** walkthrough based on the Industrial Disputes Act.
 
 ---
-
+<!--
 ## 🧮 Legal Calculators
 
 ![Calculators Page](./docs/_assets/Calculators.png)
@@ -57,8 +57,8 @@ Calculate minimum gratuity and notice pay based on labor laws.
 
 ### 2. **Rent Deposit & Notice Analyzer**
 Verify if your security deposit adheres to the Model Tenancy Act principles.
-
 ---
+-->
 
 ## 🤖 AI Legal Assistant
 
